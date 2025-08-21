@@ -2,8 +2,12 @@ import { createContext, useContext, useState, useEffect } from "react";
 import type { ReactNode } from "react";
 import { auth, db, googleProvider } from "../Config/fireBase";
 import { signInWithPopup, signOut, onAuthStateChanged } from "firebase/auth";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc,updateDoc } from "firebase/firestore";
 import type {User as FirebaseUser} from "firebase/auth";
+import { type Book } from "./BooksContext";
+import { deliveryOptions } from "../deliveryOptions";
+
+
 // ------------------ TYPES ------------------
 export interface BookCartType {
   id: string;
@@ -14,10 +18,15 @@ export interface BookCartType {
   price: number;
   disprice: number;
   image: string;
-  addedDate: string;
   keyWords: string[];
   categorie: string;
   quantity: number;
+  deliveryOption : {
+    id : string;
+    name : string;
+    delayDays : number;
+    price : number;
+  }
 }
 
 export interface OrderType {
@@ -47,17 +56,22 @@ interface UserContextType {
   setUser: (user: UserType | null) => void;
   SignInWithGoogle: () => Promise<void>;
   logOut: () => Promise<void>;
+  addToCart : (book : Book, setMsg : (msg: { show: boolean; text: string; color: string }) => void) => void
+  
+  
+  
 }
 
-// ------------------ CONTEXT ------------------
+
 const UserContext = createContext<UserContextType | null>(null);
 
-// ------------------ PROVIDER ------------------
+
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<UserType | null>(null);
   const [userData, setUserData] = useState<UserType | null>(null);
   const [loading, setLoading] = useState(false);
   const [initializing, setInitializing] = useState(true);
+  
 
   const SignInWithGoogle = async () => {
     try {
@@ -127,9 +141,77 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     return () => unsubscribe();
   }, []);
 
+  const addToCart = async (book : Book, setMsg :(msg : {show : boolean, text : string, color : string})=> void) => {
+
+    if(!user){
+      return;
+    }
+
+    const findBook = user?.cart.find((b)=> b.id === book.id);
+
+    if(findBook){
+      setMsg({
+        show : true,
+        color  : "red",
+        text : "Already in cart"
+
+      });
+
+      setTimeout(()=>{
+       setMsg({
+        show : false,
+        text : "",
+        color: "red"
+       })
+      }, 1500);
+    }else{
+
+      const newBook : BookCartType = {
+         ...book,
+         quantity : 1,
+         deliveryOption : deliveryOptions[0]
+      }
+
+ const updatedUser = {
+  ...user,
+  cart: [...user.cart, newBook],
+};
+
+setUser(updatedUser);
+
+
+
+      const userRef = doc(db, "users", user.id);
+
+      await updateDoc(userRef, {
+        cart : [...user.cart, newBook]
+      });
+
+      setMsg({
+        show : true,
+        color : "green",
+        text : "✓ Added"
+      });
+
+      setTimeout(()=>{
+                 setMsg({
+                show : false,
+                text : "",
+                color: "red"
+              })
+
+      }, 1500);
+
+      console.log(user);
+       
+    }
+  }
+
+
+
   return (
     <UserContext.Provider
-      value={{ user, userData, initializing, loading, setUser, SignInWithGoogle, logOut }}
+      value={{ user, userData, initializing, loading, setUser, SignInWithGoogle, logOut, addToCart }}
     >
       {children}
     </UserContext.Provider>

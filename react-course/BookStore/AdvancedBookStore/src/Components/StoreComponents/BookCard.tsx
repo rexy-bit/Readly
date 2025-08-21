@@ -13,13 +13,18 @@ const BookCard = ({book} : {book : Book}) => {
 
     const {showPopUp,setShowPopUp} = usePopUp();
 
+    const {addToCart} = useUser();
+    const [msg, setMsg] = useState({show : false, text : "", color : 'red'});
+
 
         const {user} = useUser();
 
-        const handleAddToCart = () => {
+        const handleAddToCart = (book : Book) => {
             if(!user){
                 setShowPopUp(true);
 
+            }else{
+                addToCart(book, setMsg);
             }
             
         }
@@ -39,7 +44,12 @@ const BookCard = ({book} : {book : Book}) => {
                 <Link onClick={()=> setDescriptionBook(book)} to="/description"><p className="text-blue-950 font-black transition-opacity duration-200 hover:opacity-80 active:opacity-60 text-center">{book.title}</p></Link>
                 <p className="text-[1.1em] font-bold">Da {book.price}</p>
 
-                <button className="mt-3 bg-blue-500 text-white w-full mb-3 h-[40px] rounded-lg font-bold cursor-pointer transition-opacity duration-200 hover:opacity-80 active:opacity-60" onClick={handleAddToCart}>Add to Cart</button>
+                <div className="h-[30px] w-full">
+                    {msg.show && 
+                       <p style={{color : msg.color}} className="text-[1em] font-bold">{msg.text}</p>
+                     }
+                </div>
+                <button className="mt-3 bg-blue-500 text-white w-full mb-3 h-[40px] rounded-lg font-bold cursor-pointer transition-opacity duration-200 hover:opacity-80 active:opacity-60" onClick={()=> handleAddToCart(book)}>Add to Cart</button>
             </div>
         </div>
     )
