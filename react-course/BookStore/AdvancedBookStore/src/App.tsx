@@ -15,14 +15,19 @@ import Search from './Pages/Search'
 import {  UserProvider } from './Contexts/UserContext'
 import User from './Pages/User'
 import { PopUpProvider } from './Contexts/PopUpContext'
+import { CartContextProvider } from './Contexts/CartContext'
+import Cart from './Pages/Cart'
 function App() {
    return(
+    
+    <BooksProvider>
+      <UserProvider>
     <PopUpProvider>
-    <UserProvider>
+     <CartContextProvider>
     <SearchProvider>
     <DescriptionProvider>
      <FilterProvider>
-      <BooksProvider>
+      
        <Routes>
            
            <Route path="/" element={
@@ -53,13 +58,20 @@ function App() {
               <User/>
             </>
            }/>
+
+           <Route path="/cart" element={
+
+            <Cart/>
+           }/>
        </Routes>
-       </BooksProvider>
+       
        </FilterProvider>
       </DescriptionProvider>
       </SearchProvider>
-      </UserProvider>
+      </CartContextProvider>
       </PopUpProvider>
+      </UserProvider>
+      </BooksProvider>
    )
 }
 

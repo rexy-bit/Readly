@@ -40,7 +40,7 @@ export const useDescription = () => {
     const context = useContext(DescriptionContext);
 
     if(!context){
-        throw new Error('Error in DescriptionContext');
+        throw new Error('Use useDescription inside description Provider go verify in your App component');
     }
 
     return context;

@@ -2,6 +2,7 @@ import { memo, useEffect, useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { useSearch } from "../Contexts/SearchContext";
 import { useUser } from "../Contexts/UserContext";
+import { useCartContext } from "../Contexts/CartContext";
 
 
 const Header = () => {
@@ -12,7 +13,10 @@ const Header = () => {
         return saved ? JSON.parse(saved) : false;
     });
 
+
+
     const {user} = useUser();
+    const {calculateTotalCartItems} = useCartContext();
 
     useEffect(()=>{
         localStorage.setItem('showNav', JSON.stringify(showNav));
@@ -60,7 +64,7 @@ const Header = () => {
             <nav className="flex flex-row justify-center items-center gap-5 max-[700px]:hidden">
                 <Link to="/store" className="linkNav">Books</Link>
                 <Link to="/profile" className="linkNav" aria-label="Profile"><i className="fa-solid fa-user"></i></Link>
-                <Link to="" className="linkNav relative" aria-label="Cart"><i className="fa-solid fa-bag-shopping"></i> <span>{!user ? "0" : user.cart.length}</span></Link>
+                <Link to="/cart" className="linkNav relative" aria-label="Cart"><i className="fa-solid fa-bag-shopping"></i> <span>{!user ? "0" : calculateTotalCartItems(user.cart)}</span></Link>
                 <Link to="" className="linkNav">Orders</Link>
             </nav>
 
@@ -71,7 +75,7 @@ const Header = () => {
                 <nav className="hidden absolute top-15 max-[700px]:flex flex-col bg-blue-400 p-3 rounded-lg right-1 w-[130px] z-50 gap-3">
                 <Link to="/store" className="secondLink">Books</Link>
                 <Link to="/profile" className="secondLink" aria-label="Profile"><i className="fa-solid fa-user mr-2"></i> Account</Link>
-                <Link to="" className="secondLink" aria-label="Cart"><i className="fa-solid fa-bag-shopping"></i> <span>{!user ? "0" : user.cart.length}</span> Cart</Link>
+                <Link to="/cart" className="secondLink" aria-label="Cart"><i className="fa-solid fa-bag-shopping"></i> <span>{!user ? "0" : calculateTotalCartItems(user.cart)}</span> Cart</Link>
                 <Link to="" className="secondLink">Orders</Link>
                 </nav>
             )}
