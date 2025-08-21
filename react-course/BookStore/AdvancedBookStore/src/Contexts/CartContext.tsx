@@ -14,6 +14,12 @@ interface CartContextType{
     addItem : (book : BookCartType) => void;
     removeItem : (book : BookCartType) => void;
     deleteBook : (book : BookCartType) => void;
+    calculateTotalWithout : () => number;
+    calculateShipping : ()=> number;
+    calculateBeforeTax : () => number;
+    calculateTax : () => number;
+    calculateTotalPrice :  () => number;
+
 }
 const CartContext = createContext<CartContextType | null>(null);
 
@@ -257,9 +263,42 @@ export const CartContextProvider = ({children} : {children : ReactNode}) => {
 
     }
 
+    const calculateTotalWithout = () => {
+        let cpt = 0;
+        user?.cart.forEach((b)=>{
+            cpt += b.quantity*b.price;
+        });
+
+        return cpt;
+    }
+
+    const calculateShipping = () => {
+        let cpt = 0;
+        user?.cart.forEach((b)=>{
+            cpt += b.deliveryOption.price;
+        });
+
+        return cpt;
+    }
+
+    const calculateBeforeTax = () => {
+      
+            const cpt = calculateTotalWithout() + calculateShipping();
+        
+            return cpt;
+    }
+
+    const calculateTax = () => {
+        return (calculateBeforeTax()/10)
+    }
+
+    const calculateTotalPrice = () => {
+        return(calculateBeforeTax() + calculateTax());
+    }
+
 
     return(
-        <CartContext.Provider value={{getEstimatedDate, calculateTotalCartItems, handleDeliveryChange, addItem, removeItem, deleteBook}}>
+        <CartContext.Provider value={{getEstimatedDate, calculateTotalCartItems, handleDeliveryChange, addItem, removeItem, deleteBook,calculateTotalWithout, calculateShipping, calculateBeforeTax, calculateTax, calculateTotalPrice}}>
             {children}
         </CartContext.Provider>
     );

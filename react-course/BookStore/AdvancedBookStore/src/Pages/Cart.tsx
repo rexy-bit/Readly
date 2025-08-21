@@ -98,8 +98,11 @@ const DisplayAllCart = () => {
 
     return(
         <div className="mt-20 flex flex-col justify-center gap-2">
+
+
             <h1 className="text-[1.4em] font-bold text-black">Review your order</h1>
 
+         
             <div className="flex flex-col gap-2 mb-10">
                 {user?.cart.map((book)=>{
                     return(
@@ -109,6 +112,56 @@ const DisplayAllCart = () => {
                         />
                     )
                 })}
+            </div>
+        </div>
+    )
+}
+
+const PayementSummary = () => {
+
+    const {calculateTotalCartItems, calculateBeforeTax, calculateTotalWithout,calculateShipping, calculateTax, calculateTotalPrice} = useCartContext();
+
+    const {user} = useUser();
+
+    if(!user){
+        return;
+    }
+
+    return(
+        <div>
+            <h1>Payement Summary</h1>
+
+            <div>
+                <div>
+                    <p>Items({calculateTotalCartItems(user?.cart)}):</p>
+                    <p>{calculateTotalWithout()}</p>
+                </div>
+
+                <div>
+                    <p>Shipping & handling:</p>
+                    <p>{calculateShipping()}</p>
+                </div>
+            </div>
+
+            <div>
+                <div>
+                    <p>Total before tax:</p>
+                    <p>{calculateBeforeTax()}</p>
+                </div>
+
+                <div>
+                    <p>Estimated tax (10%):</p>
+                    <p>{calculateTax()}</p>
+                </div>
+            </div>
+
+            <div>
+                <div>
+                    <p>Order total:</p>
+                    <p>{calculateTotalPrice()}</p>
+                </div>
+
+                <button>Place your order</button>
             </div>
         </div>
     )
@@ -140,7 +193,10 @@ const Cart = () => {
                  ? <h1 className="text-center mt-10 w-[300px] text-blue-500 font-bold">Your cart is empty, search for books, view different categories, explore the store and purchase the books you like</h1>
                   : <>
                      <CheckOut/>
+                     <div>
                      <DisplayAllCart/>
+                     <PayementSummary/>
+                     </div>
                   </>
             }
         </section>
