@@ -48,6 +48,9 @@ const BookCard = ({book} : {book : Book}) => {
                     {msg.show && 
                        <p style={{color : msg.color}} className="text-[1em] font-bold">{msg.text}</p>
                      }
+
+                     {book.stock === 0 && <p className="text-red-600 font-bold">Out of stock</p>}
+
                 </div>
                 <button className="mt-3 bg-blue-500 text-white w-full mb-3 h-[40px] rounded-lg font-bold cursor-pointer transition-opacity duration-200 hover:opacity-80 active:opacity-60" onClick={()=> handleAddToCart(book)}>Add to Cart</button>
             </div>

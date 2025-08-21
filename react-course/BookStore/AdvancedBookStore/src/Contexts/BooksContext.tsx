@@ -1,6 +1,6 @@
 import { createContext ,  useState, useEffect,type ReactNode, useContext} from "react";
 
-import {collection, getDocs, getDoc} from "firebase/firestore";
+import {collection, getDocs} from "firebase/firestore";
 import {db} from "../Config/fireBase"
 
 export interface Book{
@@ -15,7 +15,7 @@ export interface Book{
     addedDate : string;
     keyWords : string[];
     categorie : string;
-
+    stock : number;
 
 
 }
@@ -23,6 +23,7 @@ export interface Book{
 interface BookContextType{
     books : Book[];
     loading : boolean;
+    setBooks : (b : Book[]) => void;
 }
 const BooksContext = createContext<BookContextType | null>(null);
 
@@ -64,7 +65,7 @@ export const BooksProvider = ({children} : {children : ReactNode}) => {
     }, []);
 
     return(
-        <BooksContext.Provider value={{books, loading}}>
+        <BooksContext.Provider value={{books, loading, setBooks}}>
             {children}
         </BooksContext.Provider>
     )
