@@ -4,9 +4,9 @@ import { auth, db, googleProvider } from "../Config/fireBase";
 import { signInWithPopup, signOut, onAuthStateChanged } from "firebase/auth";
 import { doc, getDoc, setDoc,updateDoc } from "firebase/firestore";
 import type {User as FirebaseUser} from "firebase/auth";
-import { type Book } from "./BooksContext";
+import { useBooks, type Book } from "./BooksContext";
 import { deliveryOptions } from "../deliveryOptions";
-
+import { increment } from "firebase/firestore";
 
 // ------------------ TYPES ------------------
 export interface BookCartType {
@@ -71,7 +71,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [userData, setUserData] = useState<UserType | null>(null);
   const [loading, setLoading] = useState(false);
   const [initializing, setInitializing] = useState(true);
-  
+  const {books, setBooks} = useBooks();
 
   const SignInWithGoogle = async () => {
     try {
@@ -143,10 +143,15 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
   const addToCart = async (book : Book, setMsg :(msg : {show : boolean, text : string, color : string})=> void) => {
 
+    
+
     if(!user){
       return;
     }
 
+    if(book.stock === 0){
+      return;
+    }
     const findBook = user?.cart.find((b)=> b.id === book.id);
 
     if(findBook){
@@ -177,7 +182,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   cart: [...user.cart, newBook],
 };
 
-setUser(updatedUser);
+
 
 
 
@@ -186,6 +191,26 @@ setUser(updatedUser);
       await updateDoc(userRef, {
         cart : [...user.cart, newBook]
       });
+
+      const newBooks = books.map((b)=>{
+        if(b.id === book.id){
+          return{
+            ...b,
+            stock : b.stock - 1
+          }
+        }
+
+        return b;
+      });
+
+      setBooks(newBooks);
+
+      const bookRef = doc(db, "books", book.id);
+
+      await updateDoc(bookRef, {
+        stock : increment(-1)
+      });
+      setUser(updatedUser);
 
       setMsg({
         show : true,

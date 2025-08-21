@@ -9,4 +9,7 @@
   .secondLink{
     @apply text-[1em] font-bold text-white transition-opacity duration-200 hover:opacity-80 active:opacity-60
   }
+  .plusButton{
+    @apply text-white bg-blue-500 w-[30px] h-[20p] rounded-lg transition-opacity duration-200 hover:opacity-70 active:opacity-50 cursor-pointer font-black text-[1em]
+  }
 }
