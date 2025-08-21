@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+
+@layer components{
+
+  .linkNav{
+    @apply text-[1.1em] font-bold transition-colors duration-200 hover:text-blue-500 active:text-blue-300
+  }
+  .secondLink{
+    @apply text-[1em] font-bold text-white transition-opacity duration-200 hover:opacity-80 active:opacity-60
+  }
+}
