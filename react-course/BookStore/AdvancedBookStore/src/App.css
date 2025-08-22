@@ -13,3 +13,20 @@
     @apply text-white bg-blue-500 w-[30px] h-[20p] rounded-lg transition-opacity duration-200 hover:opacity-70 active:opacity-50 cursor-pointer font-black text-[1em]
   }
 }
+
+.smoothPulse {
+  display: inline-block;
+  animation: smoothPulse 2s infinite ease-in-out;
+}
+
+@keyframes smoothPulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}

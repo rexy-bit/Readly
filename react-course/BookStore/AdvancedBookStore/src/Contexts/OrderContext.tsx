@@ -6,6 +6,7 @@ import {db} from "../Config/fireBase"
 import { v4 as uuidv4 } from "uuid";
 import { useCartContext } from "./CartContext";
 import { useBooks } from "./BooksContext";
+import { useNavigate } from "react-router-dom";
 
 interface OrderContextType{
    addOrder : (cart : BookCartType[]) => void;
@@ -22,10 +23,12 @@ export const OrderProvider = ({children} : {children : ReactNode}) => {
     const {calculateTotalPrice} = useCartContext();
     const {books, setBooks} = useBooks();
 
+    const navigate = useNavigate();
     const addOrder = async(cart : BookCartType[]) =>{
 
         if(!user) return;
 
+        navigate('/orders');
         const newOrders = [...user.orders, {
             order : [...cart],
             orderId : uuidv4(),
@@ -73,13 +76,13 @@ export const OrderProvider = ({children} : {children : ReactNode}) => {
         });
 
         await Promise.all(
-  order.order.map((b) => {
-    const bookRef = doc(db, "books", b.id);
-    return updateDoc(bookRef, {
-      stock: increment(b.quantity),
-    });
-  })
-);
+            order.order.map((b) => {
+                const bookRef = doc(db, "books", b.id);
+                return updateDoc(bookRef, {
+                stock: increment(b.quantity),
+                });
+            })
+        );
 
 
         setUser({
