@@ -1,15 +1,16 @@
-import {doc, updateDoc} from "firebase/firestore"
-import { useUser, type BookCartType, type Order, type OrderType } from "./UserContext"
+import {doc, increment, updateDoc} from "firebase/firestore"
+import { useUser, type BookCartType, type OrderType } from "./UserContext"
 import { createContext, use, useContext, useState, type ReactNode } from "react";
 import {status} from "../status"
 import {db} from "../Config/fireBase"
 import { v4 as uuidv4 } from "uuid";
 import { useCartContext } from "./CartContext";
+import { useBooks } from "./BooksContext";
 
 interface OrderContextType{
    addOrder : (cart : BookCartType[]) => void;
    loadingOrder : boolean;
-
+   cancelOrder : (order : OrderType) => void
 }
 
 const OrderContext = createContext<OrderContextType | null>(null);
@@ -19,6 +20,7 @@ export const OrderProvider = ({children} : {children : ReactNode}) => {
     const {user, setUser} = useUser();
     const [loadingOrder, setLoadingOrder] = useState(false);
     const {calculateTotalPrice} = useCartContext();
+    const {books, setBooks} = useBooks();
 
     const addOrder = async(cart : BookCartType[]) =>{
 
@@ -61,6 +63,8 @@ export const OrderProvider = ({children} : {children : ReactNode}) => {
 
         setLoadingOrder(true);
         const userRef = doc(db, "users", user.id);
+    
+        
 
         try{
 
@@ -68,10 +72,39 @@ export const OrderProvider = ({children} : {children : ReactNode}) => {
             orders : [...newOrders]
         });
 
+        await Promise.all(
+  order.order.map((b) => {
+    const bookRef = doc(db, "books", b.id);
+    return updateDoc(bookRef, {
+      stock: increment(b.quantity),
+    });
+  })
+);
+
+
         setUser({
             ...user,
             orders: [...newOrders]
         });
+
+        const newBooks = books.map((b)=>{
+            const findBook = order.order.find((book)=>book.id === b.id);
+
+            if(!findBook){
+                return  b;
+            }else{
+          
+                return{
+                    ...b,
+                    stock : b.stock + findBook.quantity
+                }
+            
+            }
+
+           
+        });
+
+        setBooks(newBooks);
 
          }catch(err){
             console.error("Error in canceling order : ", err);
@@ -80,11 +113,11 @@ export const OrderProvider = ({children} : {children : ReactNode}) => {
          }
         
 
-        setLoadingOrder(false);
+        
     }
 
     return(
-        <OrderContext.Provider value={{addOrder, loadingOrder}}>
+        <OrderContext.Provider value={{addOrder, loadingOrder, cancelOrder}}>
             {children}
         </OrderContext.Provider>
     )

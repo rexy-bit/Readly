@@ -1,0 +1,39 @@
+import { useOrderContext } from "../../Contexts/OrderContext"
+import { useUser, type OrderType } from "../../Contexts/UserContext";
+import { memo } from "react";
+
+
+const CancelPop = ({setShowCancelPop, order} : {setShowCancelPop : (s : boolean)=> void, order: OrderType}) => {
+
+
+    const {cancelOrder} = useOrderContext();
+    const {user} = useUser();
+
+    if(!user) return;
+
+    return(
+          <section onClick={()=> setShowCancelPop(false)} className="fixed inset-0 bg-black/40  flex justify-center items-center z-50">
+            <div className="flex flex-col justify-center items-center fixed top-30 bg-white w-[600px] rounded-xl max-[650px]:w-[300px]">
+                <p className="mt-7 w-[400px] text-center font-bold max-[600px]:w-[200px]">Are You sure , you want to cancel Order : {order.orderId} ?</p>
+
+                <div className="flex flex-row justify-center items-center mt-7 mb-10 gap-2">
+                    <button onClick={()=>{
+                        setShowCancelPop(false);
+                        cancelOrder(order);
+                    }} className="bg-blue-500 text-white font-bold px-2 h-[35px] rounded-lg cursor-pointer transition-colors border border-blue-500 duration-200 hover:bg-white hover:text-blue-500">
+                        Yes, Cancel
+                    </button>
+
+                    <button onClick={()=> setShowCancelPop(false)} className="bg-red-500 text-white font-bold h-[35px] px-2 rounded-lg cursor-pointer transition-opacity duration-200 hover:opacity-80 active:opacity-60">
+                        No
+                    </button>
+                </div>
+
+                <div className="flex justify-center items-center absolute top-0 text-[1.5em] h-[30px] w-[30px] bg-blue-500 rounded-full cursor-pointer text-white right-0 mt-[-10px] mr-[-10px] transition-colors duration-200 hover:bg-blue-400 active:bg-blue-300 z-100" onClick={()=>setShowCancelPop(false)}>&times;</div>
+            </div>
+        </section>
+    )
+}
+
+
+export default memo(CancelPop);
