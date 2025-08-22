@@ -4,6 +4,7 @@ import { useCartContext } from "../Contexts/CartContext";
 import {deliveryOptions} from "../deliveryOptions"
 import Header from "../Components/Header";
 import ResetPop from "../Components/CartComponents.tsx/ResetPop";
+import { useOrderContext } from "../Contexts/OrderContext";
 
 export interface deliveryOption{
   id : string;
@@ -127,6 +128,7 @@ const PayementSummary = () => {
     const {calculateTotalCartItems, calculateBeforeTax, calculateTotalWithout,calculateShipping, calculateTax, calculateTotalPrice} = useCartContext();
 
     const {user} = useUser();
+    const {addOrder} = useOrderContext();
 
     if(!user){
         return;
@@ -166,7 +168,7 @@ const PayementSummary = () => {
                     <p>{calculateTotalPrice().toFixed(2)}Dzd</p>
                 </div>
 
-                <button className="bg-blue-500 text-white h-[35px] rounded-lg font-bold cursor-pointer transition-opacity duration-200 hover:opacity-70 active:opacity-50">Place your order</button>
+                <button className="bg-blue-500 text-white h-[35px] rounded-lg font-bold cursor-pointer transition-opacity duration-200 hover:opacity-70 active:opacity-50" onClick={()=>addOrder(user.cart)}>Place your order</button>
             </div>
         </div>
     )
@@ -186,9 +188,11 @@ const Cart = () => {
     useEffect(()=>{
         localStorage.setItem('showReset', JSON.stringify(showReset));
     }, [showReset]);
+
+    const {loadingOrder} = useOrderContext();
     
 
-    if(loadingCart){
+    if(loadingCart || loadingOrder){
          return(
             <>
               <Header/>

@@ -17,6 +17,8 @@ import User from './Pages/User'
 import { PopUpProvider } from './Contexts/PopUpContext'
 import { CartContextProvider } from './Contexts/CartContext'
 import Cart from './Pages/Cart'
+import { OrderProvider } from './Contexts/OrderContext'
+import Orders from './Pages/Orders'
 function App() {
    return(
     
@@ -24,6 +26,7 @@ function App() {
       <UserProvider>
     <PopUpProvider>
      <CartContextProvider>
+      <OrderProvider>
     <SearchProvider>
     <DescriptionProvider>
      <FilterProvider>
@@ -63,11 +66,16 @@ function App() {
 
             <Cart/>
            }/>
+
+           <Route path="/orders" element={
+            <Orders/>
+           }/>
        </Routes>
        
        </FilterProvider>
       </DescriptionProvider>
       </SearchProvider>
+      </OrderProvider>
       </CartContextProvider>
       </PopUpProvider>
       </UserProvider>

@@ -58,6 +58,10 @@ export const CartContextProvider = ({children} : {children : ReactNode}) => {
         if(user === null){
             return;
         }
+
+        if(!user){
+            return;
+        }
             const updatedCart = user.cart.map((b) => {
         if (b.id === book.id) {
             return { ...b, deliveryOption: option };
@@ -104,7 +108,7 @@ export const CartContextProvider = ({children} : {children : ReactNode}) => {
                     return{
                         ...b,
                         quantity : b.quantity + 1
-
+                        
 
                     };
                 }
