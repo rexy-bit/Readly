@@ -65,7 +65,7 @@ const Header = () => {
                 <Link to="/store" className="linkNav">Books</Link>
                 <Link to="/profile" className="linkNav" aria-label="Profile"><i className="fa-solid fa-user"></i></Link>
                 <Link to="/cart" className="linkNav relative" aria-label="Cart"><i className="fa-solid fa-bag-shopping"></i> <span>{!user ? "0" : calculateTotalCartItems(user.cart)}</span></Link>
-                <Link to="" className="linkNav">Orders</Link>
+                <Link to="/orders" className="linkNav">Orders</Link>
             </nav>
 
             <div className="hidden max-[700px]:block text-[1.8em] font-black text-blue-500 cursor-pointer transition-opacity duration-200 hover:opacity-70 active:opacity-50" onClick={()=>{setShowNav(prev => !prev)}}>&#9776;</div>
@@ -76,7 +76,7 @@ const Header = () => {
                 <Link to="/store" className="secondLink">Books</Link>
                 <Link to="/profile" className="secondLink" aria-label="Profile"><i className="fa-solid fa-user mr-2"></i> Account</Link>
                 <Link to="/cart" className="secondLink" aria-label="Cart"><i className="fa-solid fa-bag-shopping"></i> <span>{!user ? "0" : calculateTotalCartItems(user.cart)}</span> Cart</Link>
-                <Link to="" className="secondLink">Orders</Link>
+                <Link to="/orders" className="secondLink">Orders</Link>
                 </nav>
             )}
         </header>

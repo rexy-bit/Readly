@@ -35,8 +35,9 @@ export interface BookCartType {
 export interface OrderType {
   order : BookCartType[];
   orderDate: string;
-  price: string;
+  price: number;
   orderId: string;
+  
 }
 
 export interface UserType {
