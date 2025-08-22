@@ -6,6 +6,7 @@ import { doc, getDoc, setDoc,updateDoc } from "firebase/firestore";
 import type {User as FirebaseUser} from "firebase/auth";
 import { useBooks, type Book } from "./BooksContext";
 import { deliveryOptions } from "../deliveryOptions";
+import {status} from "../status"
 import { increment } from "firebase/firestore";
 
 // ------------------ TYPES ------------------
@@ -26,15 +27,15 @@ export interface BookCartType {
     name : string;
     delayDays : number;
     price : number;
+    status : string;
   }
 }
 
+
 export interface OrderType {
-  book: BookCartType;
+  order : BookCartType[];
   orderDate: string;
-  deliveryDate: string;
   price: string;
-  status: string;
   orderId: string;
 }
 
@@ -174,7 +175,8 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       const newBook : BookCartType = {
          ...book,
          quantity : 1,
-         deliveryOption : deliveryOptions[0]
+         deliveryOption : deliveryOptions[0],
+         status : status[0]
       }
 
  const updatedUser = {
