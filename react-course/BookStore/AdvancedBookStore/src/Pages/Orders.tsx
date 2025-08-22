@@ -3,8 +3,9 @@ import Header from "../Components/Header";
 import { useUser, type OrderType } from "../Contexts/UserContext"
 import type { BookCartType } from "../Contexts/UserContext";
 import { useCartContext } from "../Contexts/CartContext";
-import { memo } from "react";
+import { memo, useEffect, useState } from "react";
 import { useOrderContext } from "../Contexts/OrderContext";
+import CancelPop from "../Components/OrderComponents/CancelPop";
 
 
 const OrderHeader = ({orders} : {orders : OrderType}) => {
@@ -65,9 +66,10 @@ const OrderComponent = ({book, order} : {book : BookCartType, order : OrderType}
     );
 }
 
-const AllOrder = ({orders} : {orders : OrderType}) => {
+const AllOrder = ({orders, showCancelPop,setShowCancelPop} : {orders : OrderType, showCancelPop : boolean,setShowCancelPop : (s : boolean)=> void}) => {
 
     return(
+        <>
         <div className="flex flex-col gap-0 border border-gray-300 w-[900px] rounded-[5px]  max-[950px]:w-[500px] max-[550px]:w-[300px]">
            <OrderHeader 
            orders={orders}/>
@@ -83,8 +85,11 @@ const AllOrder = ({orders} : {orders : OrderType}) => {
             })}
            </div>
 
-           <button className="bg-red-600 text-white font-bold w-[110px] h-[35px] rounded-3xl mb-3 ml-3 mt-5 cursor-pointer transition-opacity duration-200 hover:opacity-70 active:opacity-50">Cancel Order</button>
+           <button className="bg-red-600 text-white font-bold w-[110px] h-[35px] rounded-3xl mb-3 ml-3 mt-5 cursor-pointer transition-opacity duration-200 hover:opacity-70 active:opacity-50" onClick={()=> setShowCancelPop(true)}>Cancel Order</button>
         </div>
+
+          {showCancelPop && <CancelPop setShowCancelPop={setShowCancelPop} order={orders}/>}
+        </>
     )
 
 }
@@ -95,7 +100,17 @@ const Orders = () => {
     const navigate = useNavigate();
 
     const {loading, initializing} = useUser();
-    const {loadingOrder} = useOrderContext();
+    const {loadingOrder, cancelOrder} = useOrderContext();
+    const [showCancelPop, setShowCancelPop] = useState(()=>{
+        const saved = localStorage.getItem('showCancelPop');
+
+        return saved ? JSON.parse(saved) : false;
+    });
+
+    useEffect(()=>{
+        localStorage.setItem('showCancelPop', JSON.stringify(showCancelPop));
+    }, [showCancelPop]);
+
 
     if(loading || initializing || loadingOrder){
         return(
@@ -129,11 +144,15 @@ const Orders = () => {
                         return(
                             <AllOrder
                               orders={order}
+                              setShowCancelPop={setShowCancelPop}
+                              showCancelPop={showCancelPop}
                             />
                         );
                     })}
                   </div>
                   </div>
+
+                  
                 </>
 
             }
