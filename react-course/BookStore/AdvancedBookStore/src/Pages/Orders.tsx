@@ -6,6 +6,7 @@ import { useCartContext } from "../Contexts/CartContext";
 import { memo, useEffect, useState } from "react";
 import { useOrderContext } from "../Contexts/OrderContext";
 import CancelPop from "../Components/OrderComponents/CancelPop";
+import { usePackageContext } from "../Contexts/PackageContext";
 
 
 const OrderHeader = ({orders} : {orders : OrderType}) => {
@@ -37,8 +38,18 @@ const OrderHeader = ({orders} : {orders : OrderType}) => {
 const OrderComponent = ({book, order} : {book : BookCartType, order : OrderType}) => {
  
     const {getEstimatedDate} = useCartContext();
+    const {setPackageTrack, setOrderPackageTrack} = usePackageContext();
 
     const orderDateObj = new Date(order.orderDate);
+    const navigate = useNavigate();
+
+    const handleTrackPackage = () => {
+      
+        setPackageTrack(book);
+        setOrderPackageTrack(order);
+        navigate('/track');
+        
+    }
 
 
   const estimatedDate = new Date(orderDateObj);
@@ -61,7 +72,7 @@ const OrderComponent = ({book, order} : {book : BookCartType, order : OrderType}
             
         </div>
 
-        <button className="w-[200px] bg-white border-1 border-gray-300 h-[35px] rounded-[5px] cursor-pointer transition-colors duration-200 hover:bg-gray-50 active:bg-gray-100">Track package</button>
+        <button onClick={handleTrackPackage} className="w-[200px] bg-white border-1 border-gray-300 h-[35px] rounded-[5px] cursor-pointer transition-colors duration-200 hover:bg-gray-50 active:bg-gray-100">Track package</button>
         </div>
     );
 }
@@ -80,6 +91,7 @@ const AllOrder = ({orders, showCancelPop,setShowCancelPop} : {orders : OrderType
                     <OrderComponent 
                      book={b}
                      order={orders}
+                     key={b.id}
                     />
                 )
             })}
@@ -135,7 +147,11 @@ const Orders = () => {
               <div className="flex flex-col gap-2 mt-10 jusitfy-center items-center">
                  <h1 className="w-[300px] text-blue-500 font-bold text-center">No Orders, Login to add Items to your cart and place orders</h1>
                  <button onClick={()=>navigate('/profile')} className="w-[100px] h-[35px] font-bold bg-blue-500 text-white rounded-lg transition-opacity duration-200 hover:opacity-70 active:opacity-50 cursor-pointer">Login</button>
-             </div> : 
+             </div> : user.orders.length === 0 ?
+                    <>
+                       <div>No Orders have been set</div>
+                    </>
+                    :
                 <>
                  <div className="flex flex-col mt-10 gap-2">
                    <h1 className="font-bold text-[1.5em] mb-5">Your Orders</h1>
@@ -146,6 +162,7 @@ const Orders = () => {
                               orders={order}
                               setShowCancelPop={setShowCancelPop}
                               showCancelPop={showCancelPop}
+                              key={order.orderId}
                             />
                         );
                     })}

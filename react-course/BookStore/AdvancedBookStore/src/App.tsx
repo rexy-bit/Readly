@@ -19,6 +19,8 @@ import { CartContextProvider } from './Contexts/CartContext'
 import Cart from './Pages/Cart'
 import { OrderProvider } from './Contexts/OrderContext'
 import Orders from './Pages/Orders'
+import { PackageProvider } from './Contexts/PackageContext'
+import Track from './Pages/Track'
 function App() {
    return(
     
@@ -27,6 +29,7 @@ function App() {
     <PopUpProvider>
      <CartContextProvider>
       <OrderProvider>
+        <PackageProvider>
     <SearchProvider>
     <DescriptionProvider>
      <FilterProvider>
@@ -71,12 +74,17 @@ function App() {
             <Orders/>
            }/>
 
+           <Route path="/track" element={
+            <Track/>
+           }/>
+
           
        </Routes>
        
        </FilterProvider>
       </DescriptionProvider>
       </SearchProvider>
+      </PackageProvider>
       </OrderProvider>
       </CartContextProvider>
       </PopUpProvider>

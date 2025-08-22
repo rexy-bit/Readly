@@ -27,8 +27,9 @@ export interface BookCartType {
     name : string;
     delayDays : number;
     price : number;
-    status : string;
+   
   }
+   status : string;
 }
 
 
