@@ -1,4 +1,4 @@
-import { createContext,  useContext } from "react";
+import { createContext,  useContext, useState } from "react";
 import type { ReactNode } from "react";
 import {  useUser, type BookCartType } from "./UserContext";
 import { doc, updateDoc } from "firebase/firestore";
@@ -19,6 +19,8 @@ interface CartContextType{
     calculateBeforeTax : () => number;
     calculateTax : () => number;
     calculateTotalPrice :  () => number;
+    resetCart : (cart : BookCartType[]) => void;
+    loadingCart : boolean;
 
 }
 const CartContext = createContext<CartContextType | null>(null);
@@ -27,6 +29,7 @@ export const CartContextProvider = ({children} : {children : ReactNode}) => {
 
       const {user,setUser} = useUser();
       const {books, setBooks} = useBooks();
+      const [loadingCart, setLoadingCart] = useState(false);
 
           function getEstimatedDate(days : number){
 
@@ -297,12 +300,53 @@ export const CartContextProvider = ({children} : {children : ReactNode}) => {
     }
 
 
+    const resetCart = async(cart : BookCartType[]) =>{
+
+        if(!user) return;
+
+
+
+        setLoadingCart(true);
+            await Promise.all(
+            cart.map(async (b) => {
+            const bookRef = doc(db, "books", b.id);
+            await updateDoc(bookRef, {
+                stock: increment(b.quantity),
+            });
+            })
+           );
+
+        setLoadingCart(false);
+
+                setUser({
+            ...user,
+            cart : []
+        });
+
+        const newBooks = books.map((b)=>{
+            const bookInCart = cart.find((book)=> book.id === b.id);
+
+            if(bookInCart){
+                return{
+                    ...b,
+                    stock : b.stock + bookInCart.quantity
+                }
+            }
+
+            return b;
+        });
+
+        setBooks(newBooks);
+
+    }
     return(
-        <CartContext.Provider value={{getEstimatedDate, calculateTotalCartItems, handleDeliveryChange, addItem, removeItem, deleteBook,calculateTotalWithout, calculateShipping, calculateBeforeTax, calculateTax, calculateTotalPrice}}>
+        <CartContext.Provider value={{getEstimatedDate, calculateTotalCartItems, handleDeliveryChange, addItem, removeItem, deleteBook,calculateTotalWithout, calculateShipping, calculateBeforeTax, calculateTax, calculateTotalPrice, resetCart, loadingCart}}>
             {children}
         </CartContext.Provider>
     );
 }
+
+
 
 
 export const useCartContext = () => {
