@@ -135,8 +135,7 @@ const Orders = () => {
                         </>
         )
     }
-    if(!user) return;
-
+   
     return(
 
         <>

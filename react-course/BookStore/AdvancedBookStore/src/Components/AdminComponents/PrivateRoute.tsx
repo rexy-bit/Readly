@@ -15,14 +15,11 @@ export default function PrivateRoute({children, role} : {children : React.ReactN
         );
     }
     
-    if(!user){
-    
-        return <Navigate to="/" replace/>
-    }
 
-    if(user.role !== role){
+   
+    if(user?.role === role){
         
-        return <Navigate to="/" replace/>
+        return <Navigate to="/admin/dashboard" replace/>
     }
 
    
