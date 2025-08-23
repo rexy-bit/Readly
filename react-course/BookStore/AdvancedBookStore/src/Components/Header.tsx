@@ -62,6 +62,7 @@ const Header = () => {
             </form>
 
             <nav className="flex flex-row justify-center items-center gap-5 max-[700px]:hidden">
+                <Link to="/" className="linkNav">Home</Link>
                 <Link to="/store" className="linkNav">Books</Link>
                 <Link to="/profile" className="linkNav" aria-label="Profile"><i className="fa-solid fa-user"></i></Link>
                 <Link to="/cart" className="linkNav relative" aria-label="Cart"><i className="fa-solid fa-bag-shopping"></i> <span>{!user ? "0" : calculateTotalCartItems(user.cart)}</span></Link>
@@ -71,8 +72,8 @@ const Header = () => {
             <div className="hidden max-[700px]:block text-[1.8em] font-black text-blue-500 cursor-pointer transition-opacity duration-200 hover:opacity-70 active:opacity-50" onClick={()=>{setShowNav(prev => !prev)}}>&#9776;</div>
 
             {showNav && (
-
                 <nav className="hidden absolute top-15 max-[700px]:flex flex-col bg-blue-400 p-3 rounded-lg right-1 w-[130px] z-50 gap-3">
+                <Link to="/" className="secondLink">Home</Link>
                 <Link to="/store" className="secondLink">Books</Link>
                 <Link to="/profile" className="secondLink" aria-label="Profile"><i className="fa-solid fa-user mr-2"></i> Account</Link>
                 <Link to="/cart" className="secondLink" aria-label="Cart"><i className="fa-solid fa-bag-shopping"></i> <span>{!user ? "0" : calculateTotalCartItems(user.cart)}</span> Cart</Link>
