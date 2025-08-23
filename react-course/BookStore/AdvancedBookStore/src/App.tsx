@@ -24,7 +24,8 @@ import Track from './Pages/Track'
 import PublicLayout from './Pages/PublicLayout'
 import AdminLayout from './Pages/AdminLayout'
 import PrivateRoute from './Components/AdminComponents/PrivateRoute'
-import PublicRoute from './Components/AdminComponents/PublicRoute'
+import PublicRoute from './Components/AdminComponents/HandleRoute'
+import HandleRoute from './Components/AdminComponents/HandleRoute'
 function App() {
 
   
@@ -46,9 +47,10 @@ function App() {
            
 
          <Route element={
-          <PublicRoute role="admin">
-          <PublicLayout/>
-          </PublicRoute>
+                        <PrivateRoute role='admin'>
+                            <PublicLayout />
+                          </PrivateRoute>
+                          
           }>
            <Route path="/" element={
             <>
@@ -99,9 +101,9 @@ function App() {
          
 
            <Route path="/admin/*" element={
-            <PrivateRoute role='admin'>
-              <AdminLayout/>
-            </PrivateRoute>
+                     <HandleRoute>
+                            <AdminLayout />
+                       </HandleRoute> 
            }>
 
             <Route path="dashboard" element={<>
