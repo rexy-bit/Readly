@@ -8,6 +8,7 @@ import { useBooks, type Book } from "./BooksContext";
 import { deliveryOptions } from "../deliveryOptions";
 import {status} from "../status"
 import { increment } from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
 
 // ------------------ TYPES ------------------
 export interface BookCartType {
@@ -76,6 +77,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [initializing, setInitializing] = useState(true);
   const {books, setBooks} = useBooks();
 
+  console.log(user);
   const SignInWithGoogle = async () => {
     try {
       setLoading(true);
@@ -130,6 +132,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
           const firestoreUser = docSnap.data() as UserType;
           setUser(firestoreUser);
           setUserData(firestoreUser);
+          
         } else {
           setUser(null);
           setUserData(null);
@@ -235,6 +238,8 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
        
     }
   }
+
+  
 
 
 

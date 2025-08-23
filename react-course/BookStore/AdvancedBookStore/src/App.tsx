@@ -12,7 +12,7 @@ import { DescriptionProvider } from './Contexts/DescriptionContext'
 import { SearchProvider } from './Contexts/SearchContext'
 import Header from './Components/Header'
 import Search from './Pages/Search'
-import {  UserProvider } from './Contexts/UserContext'
+import {  UserProvider, useUser } from './Contexts/UserContext'
 import User from './Pages/User'
 import { PopUpProvider } from './Contexts/PopUpContext'
 import { CartContextProvider } from './Contexts/CartContext'
@@ -21,11 +21,18 @@ import { OrderProvider } from './Contexts/OrderContext'
 import Orders from './Pages/Orders'
 import { PackageProvider } from './Contexts/PackageContext'
 import Track from './Pages/Track'
+import PublicLayout from './Pages/PublicLayout'
+import AdminLayout from './Pages/AdminLayout'
+import PrivateRoute from './Components/AdminComponents/PrivateRoute'
+import PublicRoute from './Components/AdminComponents/PublicRoute'
 function App() {
+
+  
    return(
     
     <BooksProvider>
       <UserProvider>
+        
     <PopUpProvider>
      <CartContextProvider>
       <OrderProvider>
@@ -35,9 +42,19 @@ function App() {
      <FilterProvider>
       
        <Routes>
+
            
+
+         <Route element={
+          <PublicRoute role="admin">
+          <PublicLayout/>
+          </PublicRoute>
+          }>
            <Route path="/" element={
+            <>
             <Home/>
+            
+            </>
            }/>
 
            <Route path="/store" element={
@@ -78,6 +95,32 @@ function App() {
             <Track/>
            }/>
 
+           </Route>
+         
+
+           <Route path="/admin/*" element={
+            <PrivateRoute role='admin'>
+              <AdminLayout/>
+            </PrivateRoute>
+           }>
+
+            <Route path="dashboard" element={<>
+                <div>Dashboard</div>
+              </>}/>
+            <Route path="books" element={<>
+                 <div>Books</div>
+              </>}/>
+            <Route path="users" element={<>
+                <div>
+                  Users
+                </div>
+              </>}/>
+            <Route path="orders" element={<>
+                <div>
+                  Orders
+                </div>
+              </>}/>
+          </Route>
           
        </Routes>
        
