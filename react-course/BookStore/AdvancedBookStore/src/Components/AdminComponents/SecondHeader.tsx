@@ -1,10 +1,12 @@
 import { memo } from "react"
 import { useAdminSearch } from "../../Contexts/AdminSearchContext";
+import { useNavigate } from "react-router-dom";
 
 
 const SecondHeader = () => {
 
     const {setSearch} = useAdminSearch();
+    const navigate = useNavigate();
 
     const handleSubmit = (e : React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -24,7 +26,7 @@ const SecondHeader = () => {
     }
     return(
         <div className="flex w-[800px] justify-between items-center p-3 border border-gray-300 rounded-lg gap-5 mt-10 max-[850px]:w-[320px] max-[850px]:gap-1 max-[850px]:p-1 max-[850px]:py-2">
-            <button className="bg-blue-400 text-white px-4 h-[35px] rounded-3xl font-bold cursor-pointer transition-opacity duration-200 hover:opacity-70 active:opacity-50 max-[850px]:text-[0.8em] max-[850px]:px-2">+ Add a Book</button>
+            <button className="bg-blue-400 text-white px-4 h-[35px] rounded-3xl font-bold cursor-pointer transition-opacity duration-200 hover:opacity-70 active:opacity-50 max-[850px]:text-[0.8em] max-[850px]:px-2" onClick={()=> navigate("/admin/add")}>+ Add a Book</button>
 
             <form onSubmit={handleSubmit} className="relative">
                 <input 
