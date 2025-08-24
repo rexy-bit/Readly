@@ -29,6 +29,8 @@ import HandleRoute from './Components/AdminComponents/HandleRoute'
 import BookPage from './Pages/AdminPages/BookPage'
 import Modify from './Pages/AdminPages/Modify'
 import { AdminSearchProvider } from './Contexts/AdminSearchContext'
+import AddBook from './Pages/AdminPages/AddBook'
+import { AdminOrdersProvider } from './Contexts/AdminOrdersContext'
 function App() {
 
   
@@ -36,6 +38,7 @@ function App() {
     
     <BooksProvider>
       <UserProvider>
+        <AdminOrdersProvider>
         <AdminSearchProvider>
     <PopUpProvider>
      <CartContextProvider>
@@ -121,6 +124,10 @@ function App() {
               <Route path='modify/:id' element={
                 <Modify/>
                }/>
+
+               <Route path='add' element={
+                <AddBook/>
+               }/>
             <Route path="users" element={<>
                 <div>
                   Users
@@ -143,6 +150,7 @@ function App() {
       </CartContextProvider>
       </PopUpProvider>
         </AdminSearchProvider>
+        </AdminOrdersProvider>
       </UserProvider>
       </BooksProvider>
    )

@@ -51,7 +51,7 @@ const Modify = () => {
 
         if(!book) return;
 
-        if(!book.title || !book.author || !book.categorie || !book.price || !book.disprice || !book.stock || !book.description || !book.rating ){
+        if(!book.title || !book.author || !book.categorie || book.price === null || book.disprice === null || book.stock === null || !book.description || book.rating === null){
 
             setMsg({
                 show : true,
@@ -141,7 +141,7 @@ const Modify = () => {
                 <h1 className=" text-[1.5em] font-bold text-blue-500 mt-5 underline">Modify Form</h1>
 
                 <form onSubmit={handleSubmit} className="mt-10 
-                flex flex-col justify-center items-center p-5 border border-blue-300 rounded-lg bg-blue-100 w-[700px] gap-5 mb-20">
+                flex flex-col justify-center items-center p-5 border border-blue-300 rounded-lg bg-blue-100 w-[700px] gap-5 mb-20 max-[750px]:w-[500px] max-[550px]:w-[310px]">
                     <div className="flex flex-row justify-center items-center gap-5">
 
                     <p className="font-bold">Title :</p>

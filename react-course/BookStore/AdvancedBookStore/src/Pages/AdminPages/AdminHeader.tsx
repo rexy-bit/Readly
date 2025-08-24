@@ -17,7 +17,7 @@ const AdminLayout = () => {
     return(
       
 
-            <header className="flex flex-row justify-between w-full top-0 fixed h-[55px] items-center px-2 bg-blue-400 text-white">
+            <header className="flex flex-row justify-between w-full top-0 fixed h-[55px] items-center px-2 bg-blue-400 text-white z-[50]">
                 <h1 className="text-[1.5em] font-bold">Readly Admin Panel</h1>
 
             <nav className="flex flex-row justify-center items-center gap-5 max-[700px]:hidden">
