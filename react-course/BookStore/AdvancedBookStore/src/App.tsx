@@ -26,6 +26,9 @@ import AdminLayout from './Pages/AdminLayout'
 import PrivateRoute from './Components/AdminComponents/PrivateRoute'
 import PublicRoute from './Components/AdminComponents/HandleRoute'
 import HandleRoute from './Components/AdminComponents/HandleRoute'
+import BookPage from './Pages/AdminPages/BookPage'
+import Modify from './Pages/AdminPages/Modify'
+import { AdminSearchProvider } from './Contexts/AdminSearchContext'
 function App() {
 
   
@@ -33,7 +36,7 @@ function App() {
     
     <BooksProvider>
       <UserProvider>
-        
+        <AdminSearchProvider>
     <PopUpProvider>
      <CartContextProvider>
       <OrderProvider>
@@ -109,9 +112,15 @@ function App() {
             <Route path="dashboard" element={<>
                 <div>Dashboard</div>
               </>}/>
-            <Route path="books" element={<>
-                 <div>Books</div>
-              </>}/>
+            <Route path="books" element={
+              <BookPage/>
+            }>
+               
+              </Route>
+
+              <Route path='modify/:id' element={
+                <Modify/>
+               }/>
             <Route path="users" element={<>
                 <div>
                   Users
@@ -133,6 +142,7 @@ function App() {
       </OrderProvider>
       </CartContextProvider>
       </PopUpProvider>
+        </AdminSearchProvider>
       </UserProvider>
       </BooksProvider>
    )

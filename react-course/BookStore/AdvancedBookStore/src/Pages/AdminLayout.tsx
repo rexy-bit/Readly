@@ -4,7 +4,7 @@ import AdminHeader from "../Pages/AdminPages/AdminHeader";
 
 export default function AdminLayout() {
   return (
-    <div className="flex">
+    <div className="">
       <AdminHeader /> 
       <main className="">
         <Outlet /> {/* Ici s'afficheront les pages admin */}
