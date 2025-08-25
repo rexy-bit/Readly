@@ -96,7 +96,7 @@ export const OrderProvider = ({children} : {children : ReactNode}) => {
         
         const newOrders = user.orders.filter((o)=> o.orderId !== order.orderId);
 
-        const ordersNew = adminOrders.filter((o)=> o.order.orderId !== order.orderId);
+       
 
         setLoadingOrder(true);
         const userRef = doc(db, "users", user.id);
@@ -118,6 +118,7 @@ export const OrderProvider = ({children} : {children : ReactNode}) => {
             })
         );
 
+     
 
            const orderDocQuery = collection(db, "orders");
         const orderDocs = await getDocs(orderDocQuery);
@@ -127,6 +128,7 @@ export const OrderProvider = ({children} : {children : ReactNode}) => {
             await deleteDoc(doc(db, "orders", targetDoc.id));
             setAdminOrders(adminOrders.filter(o => o.order.orderId !== order.orderId));
         }
+           
 
         setUser({
             ...user,
@@ -152,8 +154,6 @@ export const OrderProvider = ({children} : {children : ReactNode}) => {
 
         setBooks(newBooks);
 
-
-        await deleteDoc()
 
          }catch(err){
             console.error("Error in canceling order : ", err);
