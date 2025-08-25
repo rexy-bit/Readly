@@ -148,7 +148,7 @@ const Orders = () => {
                  <button onClick={()=>navigate('/profile')} className="w-[100px] h-[35px] font-bold bg-blue-500 text-white rounded-lg transition-opacity duration-200 hover:opacity-70 active:opacity-50 cursor-pointer">Login</button>
              </div> : user.orders.length === 0 ?
                     <>
-                       <div>No Orders have been set</div>
+                       <div className="text-blue-500 text-center font-bold mt-15">No Orders have been set</div>
                     </>
                     :
                 <>
