@@ -25,45 +25,65 @@ import PublicLayout from './Pages/PublicLayout'
 import AdminLayout from './Pages/AdminLayout'
 import PrivateRoute from './Components/AdminComponents/PrivateRoute'
 import PublicRoute from './Components/AdminComponents/HandleRoute'
-import HandleRoute from './Components/AdminComponents/HandleRoute'
+
 import BookPage from './Pages/AdminPages/BookPage'
 import Modify from './Pages/AdminPages/Modify'
 import { AdminSearchProvider } from './Contexts/AdminSearchContext'
 import AddBook from './Pages/AdminPages/AddBook'
 import { AdminOrdersProvider } from './Contexts/AdminOrdersContext'
+import AdminOrders from './Pages/AdminPages/AdminOrders'
+import { SearchOrdersProvider } from './Contexts/SearchOrdersContext'
+import AdminProfile from './Pages/AdminPages/AdminProfile'
+import UserRoute from './Components/AdminComponents/UserRoute'
+import AdminRoute from './Components/AdminComponents/AdminRoute'
+import Users from './Pages/AdminPages/Users'
+import { UserSearchProvider } from './Contexts/SearchUsersContext'
+
+
+
+
 function App() {
 
+
+  
   
    return(
     
     <BooksProvider>
       <UserProvider>
+        <CartContextProvider>
+          <UserSearchProvider>
+        <SearchOrdersProvider>
         <AdminOrdersProvider>
         <AdminSearchProvider>
     <PopUpProvider>
-     <CartContextProvider>
+     
       <OrderProvider>
         <PackageProvider>
     <SearchProvider>
     <DescriptionProvider>
      <FilterProvider>
       
+        
        <Routes>
 
            
-
-         <Route element={
-                        <PrivateRoute role='admin'>
-                            <PublicLayout />
-                          </PrivateRoute>
-                          
-          }>
+           
+         
+           <Route element={
+              <UserRoute>
+                <PublicLayout/>
+              </UserRoute>
+           }>
+          
+            
            <Route path="/" element={
             <>
             <Home/>
             
             </>
            }/>
+            
 
            <Route path="/store" element={
             <Store/>
@@ -79,15 +99,13 @@ function App() {
 
            <Route path="/search" element={
             <>
-              <Header/>
+             
               <Search/>
             </>
            }/>
 
            <Route path="/profile" element={
-            <>
               <User/>
-            </>
            }/>
 
            <Route path="/cart" element={
@@ -102,58 +120,47 @@ function App() {
            <Route path="/track" element={
             <Track/>
            }/>
-
-           </Route>
-         
-
-           <Route path="/admin/*" element={
-                     <HandleRoute>
-                            <AdminLayout />
-                       </HandleRoute> 
-           }>
-
-            <Route path="dashboard" element={<>
-                <div>Dashboard</div>
-              </>}/>
-            <Route path="books" element={
-              <BookPage/>
-            }>
-               
-              </Route>
-
-              <Route path='modify/:id' element={
-                <Modify/>
-               }/>
-
-               <Route path='add' element={
-                <AddBook/>
-               }/>
-            <Route path="users" element={<>
-                <div>
-                  Users
-                </div>
-              </>}/>
-            <Route path="orders" element={<>
-                <div>
-                  Orders
-                </div>
-              </>}/>
+           
           </Route>
-          
-       </Routes>
+         
+     
+          <Route path="/admin/*" element={
+            <AdminRoute>
+                 <AdminLayout/>
+             </AdminRoute>
+        }>
+  
+          <Route path="dashboard" element={<div>Dashboard</div>} />
+          <Route path="books" element={<BookPage />} />
+          <Route path="modify/:id" element={<Modify />} />
+          <Route path="add" element={<AddBook />} />
+          <Route path="users" element={<Users/>} />
+          <Route path="orders" element={<AdminOrders />} />
+          <Route path="profile" element={<AdminProfile />} />
+  
+    </Route>
+           
+                        </Routes>
        
        </FilterProvider>
       </DescriptionProvider>
       </SearchProvider>
       </PackageProvider>
       </OrderProvider>
-      </CartContextProvider>
+      
       </PopUpProvider>
         </AdminSearchProvider>
         </AdminOrdersProvider>
+        </SearchOrdersProvider>
+        </UserSearchProvider>
+        </CartContextProvider>
       </UserProvider>
       </BooksProvider>
+      
+
+
    )
+   
 }
 
 export default App

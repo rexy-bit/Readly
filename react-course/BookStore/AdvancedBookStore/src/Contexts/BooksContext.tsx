@@ -51,7 +51,7 @@ export const BooksProvider = ({children} : {children : ReactNode}) => {
                 
             });
 
-            console.log(filteredData);
+        
             setBooks(filteredData);
            
         }catch(err){

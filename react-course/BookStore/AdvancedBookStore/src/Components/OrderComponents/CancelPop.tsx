@@ -9,7 +9,7 @@ const CancelPop = ({setShowCancelPop, order} : {setShowCancelPop : (s : boolean)
     const {cancelOrder} = useOrderContext();
     const {user} = useUser();
 
-    if(!user) return;
+    if(!user) return null;
 
     return(
           <section onClick={()=> setShowCancelPop(false)} className="fixed inset-0 bg-black/40  flex justify-center items-center z-50">

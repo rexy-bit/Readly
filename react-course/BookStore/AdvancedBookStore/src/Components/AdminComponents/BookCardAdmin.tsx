@@ -11,7 +11,7 @@ const BookCardAdmin = ({book} : {book : Book}) => {
     const [loadingDelete, setLoadingDelete] = useState(false);
 
     const [showDeletePop, setShowDeletePop] = useState(()=>{
-        const saved = localStorage.getItem('saved');
+        const saved = localStorage.getItem('showDeletePop');
 
         return saved ? JSON.parse(saved) : false;
     });

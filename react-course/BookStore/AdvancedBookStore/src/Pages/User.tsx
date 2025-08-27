@@ -10,7 +10,7 @@ const User = ()=> {
      if (initializing) {
     return (
       <>
-        <Header />
+    
         <div className="flex justify-center mt-13">
           <i className="fa-solid fa-book fa-spin-pulse text-[3em] text-blue-500"></i>
         </div>
@@ -21,7 +21,6 @@ const User = ()=> {
     if(!user) return(
         <>
          
-          <Header/>
 
           {loading ? 
             <div className="flex justify-center"><i className="fa-solid fa-book fa-spin-pulse mt-13 text-[3em] text-blue-500"></i></div> : 
@@ -39,7 +38,7 @@ const User = ()=> {
     return(
         <>
           
-          <Header/>
+           
            <section className="flex flex-col justify-center items-center">
 
              {loading ? 
@@ -52,7 +51,7 @@ const User = ()=> {
                 <div className="flex flex-col justify-center ">
                  <p>Name : {user.name}</p>
                  <p>Email : {user.email}</p>
-                 <p>Cart : {user.cart.length}</p>
+                 <p>Cart : {user.cart.books.length}</p>
                  <p>Order : {user.orders.length}</p>
                  </div>
              </div>

@@ -177,7 +177,8 @@ const Modify = () => {
                     value={book.categorie}
                     onChange={handleChange}
                     className="formInput"
-                    id="">
+                    id=""
+                    >
                         <option value="fiction">Fiction</option>
                         <option value="literature">Literature</option>
                         <option value="history">History</option>

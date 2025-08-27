@@ -1,25 +1,25 @@
-import { createContext,  useContext, useState } from "react";
+import { createContext,    useContext, useState } from "react";
 import type { ReactNode } from "react";
-import {  useUser, type BookCartType } from "./UserContext";
+import {  useUser, type BookCartType, type CartType } from "./UserContext";
 import { doc, updateDoc } from "firebase/firestore";
 import {db} from "../Config/fireBase"
 import type { deliveryOption } from "../Pages/Cart";
 import { useBooks } from "./BooksContext";
+import {deliveryOptions} from "../deliveryOptions"
 
 import { increment } from "firebase/firestore"
 interface CartContextType{
     getEstimatedDate : (d : number) => string;
-    calculateTotalCartItems : (cart : BookCartType[])=> number;
-    handleDeliveryChange : (book : BookCartType, option : deliveryOption) => void;
+    calculateTotalCartItems : ()=> number;
+    handleDeliveryChange : ( option : deliveryOption) => void;
     addItem : (book : BookCartType) => void;
     removeItem : (book : BookCartType) => void;
     deleteBook : (book : BookCartType) => void;
     calculateTotalWithout : () => number;
-    calculateShipping : ()=> number;
     calculateBeforeTax : () => number;
     calculateTax : () => number;
     calculateTotalPrice :  () => number;
-    resetCart : (cart : BookCartType[]) => void;
+    resetCart : (cart : CartType) => void;
     loadingCart : boolean;
 
 }
@@ -43,40 +43,40 @@ export const CartContextProvider = ({children} : {children : ReactNode}) => {
     }).format(date);
     }
 
-    const calculateTotalCartItems = (cart : BookCartType[]) => {
+    const calculateTotalCartItems = () => {
           let cpt = 0;
 
-          cart.forEach((b)=>{
+
+          if(!user || user.cart.books.length === 0) return 0;
+
+          user.cart.books.forEach((b)=>{
             cpt += b.quantity;
           });
 
           return cpt;
     }
 
-    const handleDeliveryChange = (book : BookCartType, option : deliveryOption) => {
+    const handleDeliveryChange = ( option : deliveryOption) => {
 
-        if(user === null){
-            return;
-        }
+       
 
         if(!user){
-            return;
+            return null;
         }
-            const updatedCart = user.cart.map((b) => {
-        if (b.id === book.id) {
-            return { ...b, deliveryOption: option };
-        }
-        return b;
-    });
-           const newUser = {
+          
+           setUser({
             ...user,
-             cart : updatedCart
-           }
-
-           setUser(newUser);
+            cart : {
+                books : [...user?.cart.books],
+                deliveryOption : option
+            }
+           });
 
            const userRef = doc(db, "users", user.id);
-           updateDoc(userRef, {cart : updatedCart});
+           updateDoc(userRef, {cart : {
+                books : [...user.cart.books],
+                deliveryOption : option
+           }});
         
     }
 
@@ -86,30 +86,29 @@ export const CartContextProvider = ({children} : {children : ReactNode}) => {
         const DataBook = books.find((b)=> b.id === book.id);
 
         if(!DataBook){
-            return;
+            return null;
         }
 
         if(!user){
-                return;
+                return null;
              }
 
         if(DataBook?.stock === 0){
-            return;
+            return null;
         }else{
             
-            let bookInCart = user.cart.find((b)=> b.id === book.id);
+            let bookInCart = user.cart.books.find((b)=> b.id === book.id);
 
-            if(!bookInCart) return;
+            if(!bookInCart) return null;
 
             if(bookInCart?.quantity + 1 > 10 || DataBook?.stock === 0) return;
-            const newCart = user?.cart.map((b)=>{
+            const booksNew = user?.cart.books.map((b)=>{
                 if(b.id === book.id){
                     
                     return{
                         ...b,
                         quantity : b.quantity + 1
                         
-
                     };
                 }
 
@@ -121,13 +120,19 @@ export const CartContextProvider = ({children} : {children : ReactNode}) => {
 
                          setUser({
                                 ...user,
-                                cart : newCart
+                                cart : {
+                                    books : [...booksNew],
+                                    deliveryOption : user.cart.deliveryOption
+                                }
                         });
 
 
                             const userRef = doc(db, "users", user.id);
                             updateDoc(userRef, {
-                                cart: newCart
+                                cart: {
+                                     books : [...booksNew],
+                                    deliveryOption : user.cart.deliveryOption
+                                }
                             })
 
                             
@@ -170,20 +175,20 @@ export const CartContextProvider = ({children} : {children : ReactNode}) => {
         console.log(books);
 
         if(!DataBook){
-            return;
+            return null;
         }
        
         if(!user){
-            return;
+            return null;
         }
 
-        const bookInCart = user.cart.find((b)=> b.id === book.id);
+        const bookInCart = user.cart.books.find((b)=> b.id === book.id);
 
         if(!bookInCart) return;
 
         if(bookInCart.quantity - 1 < 1) return;
       
-        const newCart = user.cart.map((b)=>{
+        const booksNew = user.cart.books.map((b)=>{
             if(b.id === book.id){
                
                 return{
@@ -199,12 +204,18 @@ export const CartContextProvider = ({children} : {children : ReactNode}) => {
 
         setUser({
             ...user,
-            cart : newCart
+            cart : {
+                books : [...booksNew],
+                deliveryOption : user.cart.deliveryOption
+            }
         });
 
         const userRef = doc(db, "users", user.id);
         updateDoc(userRef, {
-            cart : newCart
+            cart : {
+                books : [...booksNew],
+                deliveryOption : user.cart.deliveryOption
+            }
         });
 
                                   const newBooks = books.map((b)=>{
@@ -238,16 +249,22 @@ export const CartContextProvider = ({children} : {children : ReactNode}) => {
         if(!book) return;
         if(!user) return;
 
-        const newCart = user.cart.filter((b)=>b.id !== book.id);
+        const booksNew = user.cart.books.filter((b)=>b.id !== book.id);
 
         setUser({
             ...user,
-            cart : newCart
+            cart : {
+                books : [...booksNew],
+                deliveryOption: user.cart.deliveryOption
+            }
         });
 
         const userRef = doc(db, "users", user.id);
         updateDoc(userRef, {
-            cart : newCart
+            cart : {
+                books : [...booksNew],
+                deliveryOption : user.cart.deliveryOption
+            }
         });
 
         const newBooks = books.map((b)=>{
@@ -272,25 +289,19 @@ export const CartContextProvider = ({children} : {children : ReactNode}) => {
 
     const calculateTotalWithout = () => {
         let cpt = 0;
-        user?.cart.forEach((b)=>{
+        user?.cart.books.forEach((b)=>{
             cpt += b.quantity*b.price;
         });
 
         return cpt;
     }
 
-    const calculateShipping = () => {
-        let cpt = 0;
-        user?.cart.forEach((b)=>{
-            cpt += b.deliveryOption.price;
-        });
-
-        return cpt;
-    }
+    
 
     const calculateBeforeTax = () => {
+        if(!user) return 0;
       
-            const cpt = calculateTotalWithout() + calculateShipping();
+            const cpt = calculateTotalWithout() + user.cart.deliveryOption.price;
         
             return cpt;
     }
@@ -304,15 +315,15 @@ export const CartContextProvider = ({children} : {children : ReactNode}) => {
     }
 
 
-    const resetCart = async(cart : BookCartType[]) =>{
+    const resetCart = async(cart : CartType) =>{
 
-        if(!user) return;
+        if(!user) return null;
 
 
 
         setLoadingCart(true);
             await Promise.all(
-            cart.map(async (b) => {
+            cart.books.map(async (b) => {
             const bookRef = doc(db, "books", b.id);
             await updateDoc(bookRef, {
                 stock: increment(b.quantity),
@@ -324,11 +335,17 @@ export const CartContextProvider = ({children} : {children : ReactNode}) => {
 
                 setUser({
             ...user,
-            cart : []
+            cart : {
+                books : [],
+                deliveryOption : deliveryOptions[0]
+            }
         });
 
+        const userRef = doc(db, "users", user.id);
+         await updateDoc(userRef, { cart: { books: [], deliveryOption: deliveryOptions[0] } });
+
         const newBooks = books.map((b)=>{
-            const bookInCart = cart.find((book)=> book.id === b.id);
+            const bookInCart = cart.books.find((book)=> book.id === b.id);
 
             if(bookInCart){
                 return{
@@ -344,7 +361,7 @@ export const CartContextProvider = ({children} : {children : ReactNode}) => {
 
     }
     return(
-        <CartContext.Provider value={{getEstimatedDate, calculateTotalCartItems, handleDeliveryChange, addItem, removeItem, deleteBook,calculateTotalWithout, calculateShipping, calculateBeforeTax, calculateTax, calculateTotalPrice, resetCart, loadingCart}}>
+        <CartContext.Provider value={{getEstimatedDate, calculateTotalCartItems, handleDeliveryChange, addItem, removeItem, deleteBook,calculateTotalWithout,  calculateBeforeTax, calculateTax, calculateTotalPrice, resetCart, loadingCart}}>
             {children}
         </CartContext.Provider>
     );

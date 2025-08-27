@@ -38,22 +38,13 @@ const OrderHeader = ({orders} : {orders : OrderType}) => {
 const OrderComponent = ({book, order} : {book : BookCartType, order : OrderType}) => {
  
     const {getEstimatedDate} = useCartContext();
-    const {setPackageTrack, setOrderPackageTrack} = usePackageContext();
+  
 
-    const orderDateObj = new Date(order.orderDate);
-    const navigate = useNavigate();
+    const {user} = useUser();
 
-    const handleTrackPackage = () => {
-      
-        setPackageTrack(book);
-        setOrderPackageTrack(order);
-        navigate('/track');
-        
-    }
+    if(!user) return null;
 
 
-  const estimatedDate = new Date(orderDateObj);
-  estimatedDate.setDate(orderDateObj.getDate() + book.deliveryOption.delayDays);
     return(
         <div  className="flex flex-row w-full justify-between p-5 items-center max-[950px]:flex-col max-[950px]:gap-4">
         <div className="flex flex-row justify-center items-center gap-4 max-[950px]:flex-col">
@@ -64,29 +55,44 @@ const OrderComponent = ({book, order} : {book : BookCartType, order : OrderType}
             <div className="flex flex-col gap-1">
                 <p className="font-bold">{book.title}</p>
                 <p>Quantity : {book.quantity}</p>
-                <p>Arriving on : {estimatedDate.toLocaleDateString("en-US", {
-                    month: "long",
-                    day: "numeric",
-                    })}</p>
+             
             </div>
             
-        </div>
+       </div>
 
-        <button onClick={handleTrackPackage} className="w-[200px] bg-white border-1 border-gray-300 h-[35px] rounded-[5px] cursor-pointer transition-colors duration-200 hover:bg-gray-50 active:bg-gray-100">Track package</button>
-        </div>
+      </div>
     );
 }
 
 const AllOrder = ({orders, showCancelPop,setShowCancelPop} : {orders : OrderType, showCancelPop : boolean,setShowCancelPop : (s : boolean)=> void}) => {
 
+    const {setOrderPackageTrack} = usePackageContext();
+    const {user} = useUser();
+      
+
+    if(!user) return null;
+
+        const orderDateObj = new Date(orders.orderDate);
+    const navigate = useNavigate();
+
+
+
+  const estimatedDate = new Date(orderDateObj);
+  estimatedDate.setDate(orderDateObj.getDate() + user.cart.deliveryOption.delayDays);
     return(
         <>
         <div className="flex flex-col gap-0 border border-gray-300 w-[900px] rounded-[5px]  max-[950px]:w-[500px] max-[550px]:w-[300px]">
            <OrderHeader 
            orders={orders}/>
 
-           <div className="flex flex-col max-[950px]:gap-2">
-            {orders.order.map((b)=>{
+           <div className="flex flex-col max-[950px]:gap-2 max-[1025px]:justify-center max-[1025px]:items-center">
+              <p className="text-[1.4em] font-bold text-blue-500 mt-3 ml-3 underline">Arriving on : {estimatedDate.toLocaleDateString("en-US", {
+                    month: "long",
+                    day: "numeric",
+                    })}</p>
+            <div className="flex flex-row justify-between max-[1025px]:flex-col max-[1025px]:justify-center max-[1025px]:items-center">
+            <div>
+                            {orders.order.books.map((b)=>{
                 return(
                     <OrderComponent 
                      book={b}
@@ -95,9 +101,23 @@ const AllOrder = ({orders, showCancelPop,setShowCancelPop} : {orders : OrderType
                     />
                 )
             })}
+            </div>
+
+                <div className="flex flex-col mt-5 mr-5">
+
+                 
+
+                            <button onClick={()=> {
+                                setOrderPackageTrack(orders);
+                                navigate("/track");
+                                }} className="w-[220px] bg-gray-50 border border-gray-300 rounded-[5px] h-[35px] text-[0.9em] cursor-pointer transtion-colors duration-200 hover:bg-gray-100">Track Package</button>
+                 </div>
+            </div>
+           
+       
            </div>
 
-           <button className="bg-red-600 text-white font-bold w-[110px] h-[35px] rounded-3xl mb-3 ml-3 mt-5 cursor-pointer transition-opacity duration-200 hover:opacity-70 active:opacity-50" onClick={()=> setShowCancelPop(true)}>Cancel Order</button>
+           <button className="bg-red-600 text-white font-bold w-[110px] h-[35px] rounded-3xl mb-3 ml-3 mt-8 cursor-pointer transition-opacity duration-200 hover:opacity-70 active:opacity-50" onClick={()=> setShowCancelPop(true)}>Cancel Order</button>
         </div>
 
           {showCancelPop && <CancelPop setShowCancelPop={setShowCancelPop} order={orders}/>}
@@ -127,8 +147,7 @@ const Orders = () => {
     if(loading || initializing || loadingOrder){
         return(
                         <>
-                          <Header/>
-                          
+                             
                            <div className="flex justify-center mt-20">
                       <i className="fa-solid fa-book fa-spin-pulse text-[3em] text-blue-500"></i>
                     </div>
@@ -139,7 +158,7 @@ const Orders = () => {
     return(
 
         <>
-          <Header/>
+         
 
           <section className="flex flex-col justify-center items-center w-full">
             {!user ?

@@ -2,13 +2,11 @@ import { createContext, useContext, useState, useEffect } from "react";
 import type { ReactNode } from "react";
 import { auth, db, googleProvider } from "../Config/fireBase";
 import { signInWithPopup, signOut, onAuthStateChanged } from "firebase/auth";
-import { doc, getDoc, setDoc,updateDoc } from "firebase/firestore";
-import type {User as FirebaseUser} from "firebase/auth";
+import { collection, doc, getDoc, getDocs, setDoc,updateDoc } from "firebase/firestore";
+import type {User as FirebaseUser, User} from "firebase/auth";
 import { useBooks, type Book } from "./BooksContext";
 import { deliveryOptions } from "../deliveryOptions";
-import {status} from "../status"
 import { increment } from "firebase/firestore";
-import { useNavigate } from "react-router-dom";
 
 // ------------------ TYPES ------------------
 export interface BookCartType {
@@ -23,30 +21,35 @@ export interface BookCartType {
   keyWords: string[];
   categorie: string;
   quantity: number;
-  deliveryOption : {
+
+   
+}
+
+export interface CartType{
+  books : BookCartType[];
+    deliveryOption : {
     id : string;
     name : string;
     delayDays : number;
     price : number;
    
   }
-   status : string;
 }
 
 
 export interface OrderType {
-  order : BookCartType[];
+  order : CartType;
   orderDate: string;
   price: number;
   orderId: string;
-  
+  status : string;
 }
 
 export interface UserType {
   id: string;
   name: string;
   email: string | null;
-  cart: BookCartType[];
+  cart: CartType;
   orders: OrderType[];
   role: string;
   dateCreation: string;
@@ -60,9 +63,10 @@ interface UserContextType {
   setUser: (user: UserType | null) => void;
   SignInWithGoogle: () => Promise<void>;
   logOut: () => Promise<void>;
-  addToCart : (book : Book, setMsg : (msg: { show: boolean; text: string; color: string }) => void) => void
-  
-  
+  addToCart : (book : Book, setMsg : (msg: { show: boolean; text: string; color: string }) => void) => void;
+  loadingUsers : boolean;
+  users : UserType[];
+  setUsers : (users : UserType[]) => void;
   
 }
 
@@ -77,7 +81,11 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [initializing, setInitializing] = useState(true);
   const {books, setBooks} = useBooks();
 
-  console.log(user);
+  const [users, setUsers] = useState([]);
+  const [loadingUsers, setLoadingUsers] = useState(false);
+  
+
+  
   const SignInWithGoogle = async () => {
     try {
       setLoading(true);
@@ -92,7 +100,10 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
           id: signedInUser.uid,
           name: signedInUser.displayName || "",
           email: signedInUser.email,
-          cart: [],
+          cart: {
+            books : [],
+            deliveryOption : deliveryOptions[0]
+          },
           orders: [],
           dateCreation: new Date().toISOString(),
           role: "user",
@@ -147,6 +158,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     return () => unsubscribe();
   }, []);
 
+
   const addToCart = async (book : Book, setMsg :(msg : {show : boolean, text : string, color : string})=> void) => {
 
     
@@ -158,7 +170,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     if(book.stock === 0){
       return;
     }
-    const findBook = user?.cart.find((b)=> b.id === book.id);
+    const findBook = user?.cart.books.find((b)=> b.id === book.id);
 
     if(findBook){
       setMsg({
@@ -180,13 +192,16 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       const newBook : BookCartType = {
          ...book,
          quantity : 1,
-         deliveryOption : deliveryOptions[0],
-         status : status[0]
+         
+        
       }
 
  const updatedUser = {
   ...user,
-  cart: [...user.cart, newBook],
+  cart: {
+          ...user.cart,
+          books : [...user.cart.books, newBook]
+        }
 };
 
 
@@ -196,7 +211,10 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       const userRef = doc(db, "users", user.id);
 
       await updateDoc(userRef, {
-        cart : [...user.cart, newBook]
+        cart : {
+          ...user.cart,
+          books : [...user.cart.books, newBook]
+        }
       });
 
       const newBooks = books.map((b)=>{
@@ -240,12 +258,38 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   }
 
   
+  const getUsersFromFireStore = async() => {
 
+    const usersCollectionRef = collection(db, "users");
+
+    setLoadingUsers(true);
+    try{
+        const data = await getDocs(usersCollectionRef);
+
+        const filteredData : UserType[] = data.docs.map((doc)=>{
+          return{
+            ...(doc.data() as UserType)
+          }
+        });
+
+        console.log(filteredData);
+        setUsers(filteredData);
+    }catch(err){
+      console.error('Error in getting users from fireStore : ', err);
+    }finally{
+      setLoadingUsers(false);
+    }
+
+  }
+
+  useEffect(()=>{
+    getUsersFromFireStore();
+  }, []);
 
 
   return (
     <UserContext.Provider
-      value={{ user, userData, initializing, loading, setUser, SignInWithGoogle, logOut, addToCart }}
+      value={{ user, userData, initializing, loading, setUser, SignInWithGoogle, logOut, addToCart, users, loadingUsers, setUsers }}
     >
       {children}
     </UserContext.Provider>

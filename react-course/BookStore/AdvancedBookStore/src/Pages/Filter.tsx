@@ -17,7 +17,7 @@ const Filter = () => {
     return(
 
         <>
-          <Header/>
+         
           <FilterComponent/>
         
           {!categorie || filteredBooks.length === 0 ? (

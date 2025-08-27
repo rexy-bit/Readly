@@ -1,5 +1,5 @@
 import  { memo, useEffect, useState} from "react"
-import { useUser, type BookCartType } from "../Contexts/UserContext"
+import { useUser, type BookCartType, type CartType } from "../Contexts/UserContext"
 import { useCartContext } from "../Contexts/CartContext";
 import {deliveryOptions} from "../deliveryOptions"
 import Header from "../Components/Header";
@@ -12,7 +12,7 @@ export interface deliveryOption{
   delayDays : number;
   price : number;
 }
-const DeliveryOptions = ({book} : {book : BookCartType}) => {
+const DeliveryOptions = ({cart} : {cart : CartType}) => {
 
     const {getEstimatedDate, handleDeliveryChange} = useCartContext();
     
@@ -23,13 +23,12 @@ const DeliveryOptions = ({book} : {book : BookCartType}) => {
             <div className="flex flex-col mt-2">
                 {deliveryOptions.map((option : deliveryOption)=>{
                     return(
-                       <label key={option.id} className="flex flex-row gap-3 items-center">
+                       <label key={option.id} className="flex flex-row gap-3 items-center cursor-pointer transtion-opacity duration-200 hover:opacity-70 active:opacity-50">
                          <input 
                          type="radio" 
-                         checked={book.deliveryOption.id === option.id}
-                         name={`delivery-${book.id}`}
-                         onChange={()=> handleDeliveryChange(book, option)}
-                         
+                         checked={cart.deliveryOption.id === option.id}
+                         onChange={()=> handleDeliveryChange( option)}
+                         className="cursor-pointer"
                          />
 
                          <div>
@@ -47,9 +46,12 @@ const BookCartCard = ({book} : {book : BookCartType}) => {
 
     const {getEstimatedDate, addItem, removeItem, deleteBook} = useCartContext();
 
+    const {user} = useUser();
+
+    if(!user) return null;
     return(
         <div className="flex flex-col p-7 border border-gray-400 rounded-s max-[1025px]:items-center max-[1025px]:p-1 max-[1025px]:w-[300px]">
-             <h1 className="text-[1.3em] font-bold text-blue-500 mb-5 max-[1025px]:mt-3 max-[1025px]:w-[200px] max-[1025px]:text-center">Delivery Date : {getEstimatedDate(book.deliveryOption.delayDays)}</h1>
+          
 
              <div className="flex flex-row gap-20 justify-center items-center max-[1025px]:flex-col max-[1025px]:gap-5">
              <div className="flex flex-row gap-4 justify-center items-center max-[1025px]:flex-col">
@@ -70,9 +72,7 @@ const BookCartCard = ({book} : {book : BookCartType}) => {
                 </div>
              </div>
   
-                 <DeliveryOptions
-                  book={book}
-                  />
+
 
              </div>
         </div>
@@ -85,11 +85,11 @@ const CheckOut = () => {
     const {user} = useUser();
 
     if(!user){
-        return;
+        return null;
     }
     return(
         <header className="fixed top-[55px] text-[1.3em] bg-blue-400 w-full h-[45px] flex justify-center items-center text-white font-black z-10">
-            Checkout <span className="ml-2">({calculateTotalCartItems(user.cart)} items)</span>
+            Checkout <span className="ml-2">({calculateTotalCartItems()} items)</span>
         </header>
     )
 }
@@ -98,6 +98,8 @@ const DisplayAllCart = () => {
 
     const {user} = useUser();
 
+    const {getEstimatedDate} = useCartContext();
+    if(!user) return null;
     return(
         <div className="mt-20 flex flex-col justify-center max-[1025px]:items-center">
 
@@ -105,15 +107,32 @@ const DisplayAllCart = () => {
             <h1 className="text-[1.4em] font-bold text-black">Review your order</h1>
 
           <div className="flex flex-row justify-center gap-5 mb-10 mt-2 max-[1025px]:flex-col max-[1025px]:items-center">
-            <div className="flex flex-col gap-2 order-1 max-[1025px]:order-2">
-                {user?.cart.map((book)=>{
+
+
+            <div className="flex flex-col gap-2 order-1 max-[1025px]:order-2 border border-gray-400 p-5 rounded-lg mb-20">
+                   <h1 className="text-[1.3em] font-bold text-blue-500 mb-5 max-[1025px]:mt-3 max-[1025px]:w-[200px] max-[1025px]:text-center">Delivery Date : <span className="max-[1025px]:w-[200px] text-center">{getEstimatedDate(user?.cart.deliveryOption.delayDays)}</span></h1>
+                <div className="flex flex-row gap-10 max-[1025px]:flex-col max-[1025px]:justify-center max-[1025px]:items-center">
+                    <div className="flex flex-col gap-5">
+                {user?.cart.books.map((book)=>{
                     return(
                         <BookCartCard
                         book={book}
                         key={book.id}
                         />
+
+                        
                     )
+
+                    
                 })}
+                </div>
+
+                  <DeliveryOptions
+                cart={user.cart}
+                />
+                </div>
+                
+              
             </div>
             <div className="order-2 max-[1025px]:order-1">
             <PayementSummary/>
@@ -125,13 +144,13 @@ const DisplayAllCart = () => {
 
 const PayementSummary = () => {
 
-    const {calculateTotalCartItems, calculateBeforeTax, calculateTotalWithout,calculateShipping, calculateTax, calculateTotalPrice} = useCartContext();
+    const {calculateTotalCartItems, calculateBeforeTax, calculateTotalWithout, calculateTax, calculateTotalPrice} = useCartContext();
 
     const {user} = useUser();
     const {addOrder} = useOrderContext();
 
     if(!user){
-        return;
+        return null;
     }
 
     return(
@@ -140,13 +159,13 @@ const PayementSummary = () => {
 
             <div className="w-full flex flex-col gap-1 mt-3">
                 <div className="flex flex-row justify-between items-center">
-                    <p>Items({calculateTotalCartItems(user?.cart)}):</p>
+                    <p>Items({calculateTotalCartItems()}):</p>
                     <p>{calculateTotalWithout().toFixed(2)}Dzd</p>
                 </div>
 
                 <div className="flex flex-row justify-between items-center">
-                    <p>Shipping & handling:</p>
-                    <p>{calculateShipping().toFixed(2)}Dzd</p>
+                    <p>Shipping & handling :</p>
+                    <p>{user.cart.deliveryOption.price.toFixed(2)}Dzd</p>
                 </div>
             </div>
 
@@ -195,7 +214,7 @@ const Cart = () => {
     if(loadingCart || loadingOrder){
          return(
             <>
-              <Header/>
+             
               <CheckOut/>
                <div className="flex justify-center mt-20">
           <i className="fa-solid fa-book fa-spin-pulse text-[3em] text-blue-500"></i>
@@ -206,7 +225,7 @@ const Cart = () => {
     if(!user && initializing){
         return(
             <>
-              <Header/>
+              
               <CheckOut/>
                <div className="flex justify-center mt-20">
           <i className="fa-solid fa-book fa-spin-pulse text-[3em] text-blue-500"></i>
@@ -217,7 +236,7 @@ const Cart = () => {
     if( loading || initializing){
         return(
         <>
-      <Header/>
+      
                <div className="flex justify-center mt-13">
           <i className="fa-solid fa-book fa-spin-pulse text-[3em] text-blue-500"></i>
         </div>
@@ -228,12 +247,12 @@ const Cart = () => {
     
     return(
         <>
-        <Header/>
+        
         
         <section className="flex flex-col justify-center w-full items-center">
            {!user ?
                <h1 className="w-[300px] text-center text-blue-500 mt-20 font-bold text-[1.1em]">Your Cart is empty create an account to add books to your cart and place orders</h1>  
-               : user.cart.length === 0 
+               : user.cart.books.length === 0 
                  ? <h1 className="text-center mt-10 w-[300px] text-blue-500 font-bold">Your cart is empty, search for books, view different categories, explore the store and purchase the books you like</h1>
                   : <>
                      <CheckOut/>

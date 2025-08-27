@@ -11,7 +11,7 @@ const PopUp = ()=> {
     const {setShowPopUp} = usePopUp();
     return(
         <section onClick={()=> setShowPopUp(false)} className="fixed inset-0 bg-black/40  flex justify-center items-center z-50">
-            <div className="flex flex-col justify-center items-center fixed top-30 bg-white w-[600px] rounded-xl max-[650px]:w-[300px]">
+            <div onClick={(e) => e.stopPropagation()}  className="flex flex-col justify-center items-center fixed top-30 bg-white w-[600px] rounded-xl max-[650px]:w-[300px]">
                 <p className="mt-7 w-[400px] text-center font-bold max-[600px]:w-[200px]">Your Cart is Empty Sign In to add books to your cart and place orders</p>
 
                 <div className="flex flex-row justify-center items-center mt-7 mb-10 gap-2">

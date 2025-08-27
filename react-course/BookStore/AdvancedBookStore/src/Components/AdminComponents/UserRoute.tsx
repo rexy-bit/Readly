@@ -4,8 +4,11 @@ import { useUser } from "../../Contexts/UserContext";
 export default function UserRoute({ children }: { children: React.ReactNode }) {
   const { user, initializing } = useUser();
 
-  if (initializing) return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
-  if (!user || user.role !== "user") return <Navigate to="/" replace />;
+  if (initializing) return <div>Chargement...</div>;
+
+    if(user && user.role === "admin"){
+      return <Navigate to="/admin/dashboard"/>
+    } 
 
   return <>{children}</>;
 }
