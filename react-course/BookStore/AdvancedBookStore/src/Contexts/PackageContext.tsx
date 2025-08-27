@@ -3,26 +3,17 @@ import type { BookCartType, OrderType } from "./UserContext";
 
 
 interface PackageContextType{
-    packageTrack : BookCartType | null;
-    setPackageTrack : (b: BookCartType) => void;
+
     orderPackageTrack : OrderType | null;
     setOrderPackageTrack : (o : OrderType) => void;
 }
 
 const PackageContext = createContext<PackageContextType | null>(null);
 
+
 export const PackageProvider = ({children} : {children : ReactNode}) => {
 
-    const [packageTrack , setPackageTrack] = useState(()=>{
 
-        const saved = localStorage.getItem('packageTrack');
-
-        return saved ? JSON.parse(saved) : null;
-    });
-
-    useEffect(()=>{
-        localStorage.setItem('packageTrack', JSON.stringify(packageTrack));
-    }, [packageTrack]);
 
     const [orderPackageTrack, setOrderPackageTrack] = useState(()=>{
         const saved = localStorage.getItem('orderPackageTrack');
@@ -31,12 +22,16 @@ export const PackageProvider = ({children} : {children : ReactNode}) => {
     });
 
     useEffect(()=>{
-        localStorage.setItem('orderPackageTrack', JSON.stringify(orderPackageTrack));
+          if (orderPackageTrack !== null) {
+    localStorage.setItem("orderPackageTrack", JSON.stringify(orderPackageTrack));
+  } else {
+    localStorage.removeItem("orderPackageTrack");
+  }
     }, [orderPackageTrack]);
 
 
     return(
-     <PackageContext.Provider value={{packageTrack, setPackageTrack, orderPackageTrack, setOrderPackageTrack}}>
+     <PackageContext.Provider value={{ orderPackageTrack, setOrderPackageTrack}}>
         {children}
     </PackageContext.Provider>
     )

@@ -13,7 +13,7 @@ const Search = () => {
 
     if(!search || search === "") return(
         <>
-        <Header/>
+       
 
         <h1>Not found</h1>
         </>
@@ -30,13 +30,13 @@ const Search = () => {
           {filteredBooks.length === 0 
             ?
              <>
-               <Header/>
+          
                 <h1 className="text-center mt-10 text-blue-500">Not found</h1>
              </>
            
             : 
              <>
-                <Header/>
+    
 
                 <section className="flex flex-col justify-center items-center">
                     <h1 className="mt-10 text-[1.5em] text-blue-500 font-black underline">Search Result :</h1>

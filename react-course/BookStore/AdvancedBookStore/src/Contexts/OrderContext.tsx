@@ -1,15 +1,16 @@
 import {addDoc, collection, deleteDoc, doc, increment, updateDoc, getDocs} from "firebase/firestore"
-import { useUser, type BookCartType, type OrderType } from "./UserContext"
+import { useUser, type CartType, type OrderType } from "./UserContext"
 import { createContext,  useContext, useState, type ReactNode } from "react";
 import {db} from "../Config/fireBase"
 import { v4 as uuidv4 } from "uuid";
 import { useCartContext } from "./CartContext";
 import { useBooks } from "./BooksContext";
 import { useNavigate } from "react-router-dom";
-import { useAdminOrders } from "./AdminOrdersContext";
-
+import { useAdminOrders, type AdminOrders } from "./AdminOrdersContext";
+import {status} from "../status"
+import {deliveryOptions} from "../deliveryOptions"
 interface OrderContextType{
-   addOrder : (cart : BookCartType[]) => void;
+   addOrder : (cart : CartType) => void;
    loadingOrder : boolean;
    cancelOrder : (order : OrderType) => void
 }
@@ -20,24 +21,27 @@ export const OrderProvider = ({children} : {children : ReactNode}) => {
 
     const {user, setUser} = useUser();
     const [loadingOrder, setLoadingOrder] = useState(false);
-    const {calculateTotalPrice} = useCartContext();
+   
     const {books, setBooks} = useBooks();
     const {adminOrders, setAdminOrders} = useAdminOrders();
 
     const navigate = useNavigate();
-    const addOrder = async(cart : BookCartType[]) =>{
+    const {calculateTotalPrice} = useCartContext();
+    const addOrder = async(cart : CartType) =>{
+   
 
-        if(!user) return;
+        if(!user) return null;
 
+         
         const orderId = uuidv4();
 
         navigate('/orders');
         const newOrders = [...user.orders, {
-            order : [...cart],
+            order : cart,
             orderId : orderId,
             price : calculateTotalPrice(),
-            orderDate : new Date().toISOString()
-            
+            orderDate : new Date().toISOString(),
+            status : status[0]
         }];
 
         setLoadingOrder(true);
@@ -45,18 +49,23 @@ export const OrderProvider = ({children} : {children : ReactNode}) => {
         const userRef = doc(db, "users", user.id);
         await updateDoc(userRef, {
             orders : newOrders,
-            cart : []
+            cart : {
+                books : [],
+                deliveryOption : deliveryOptions[0]
+            }
         });
 
         const orderDocRef = await addDoc(collection(db, "orders"), {
             userName : user.name,
             userId : user.id,
             order : {
-            order : [...cart],
+            order : cart,
             orderId : orderId,
             price : calculateTotalPrice(),
-            orderDate : new Date().toISOString()
-            }
+            orderDate : new Date().toISOString(),
+            status : status[0]
+            },
+            createdAt: new Date()
         });
 
         await updateDoc(orderDocRef, {
@@ -67,16 +76,20 @@ export const OrderProvider = ({children} : {children : ReactNode}) => {
             userName : user.name,
             userId : user.id,
             order : {
-            order : [...cart],
+            order : cart,
             orderId : orderId,
             price : calculateTotalPrice(),
-            orderDate : new Date().toISOString()
-            }
+            orderDate : new Date().toISOString(),
+            status : status[0]
+            },
+            id : orderDocRef.id,
+            createdAt: new Date()
         }];
 
-        if(!ordersNew){
-        setAdminOrders(ordersNew);
-        }
+          
+         
+          setAdminOrders(ordersNew);
+          
 
 
         setLoadingOrder(false);
@@ -84,7 +97,10 @@ export const OrderProvider = ({children} : {children : ReactNode}) => {
         setUser({
             ...user, 
             orders : [...newOrders],
-            cart : []
+            cart : {
+              books : [],
+              deliveryOption : deliveryOptions[0]
+            }
         });
         
     }
@@ -110,7 +126,7 @@ export const OrderProvider = ({children} : {children : ReactNode}) => {
         });
 
         await Promise.all(
-            order.order.map((b) => {
+            order.order.books.map((b) => {
                 const bookRef = doc(db, "books", b.id);
                 return updateDoc(bookRef, {
                 stock: increment(b.quantity),
@@ -120,23 +136,46 @@ export const OrderProvider = ({children} : {children : ReactNode}) => {
 
      
 
-           const orderDocQuery = collection(db, "orders");
-        const orderDocs = await getDocs(orderDocQuery);
-        const targetDoc = orderDocs.docs.find(d => d.data().order.orderId === order.orderId && d.data().userId === user.id);
+            const orderDocQuery = collection(db, "orders");
+    const orderDocs = await getDocs(orderDocQuery);
+    const targetDoc = orderDocs.docs.find(
+      (d) => d.data().order.orderId === order.orderId && d.data().userId === user.id
+    );
 
-        if (targetDoc) {
-            await deleteDoc(doc(db, "orders", targetDoc.id));
-            setAdminOrders(adminOrders.filter(o => o.order.orderId !== order.orderId));
-        }
-           
+     if (targetDoc) {
+      const orderRef = doc(db, "orders", targetDoc.id);
 
+      await updateDoc(orderRef, {
+        order: {
+          ...targetDoc.data().order,
+          status: "Canceled",
+        },
+      });
+
+          const newAdminOrders = adminOrders.map((o)=>{
+            if(o.order.orderId === order.orderId){
+                return{
+                    ...o,
+                    order : {
+                        ...o.order,
+                        status : "Canceled"
+                    }
+                }
+            }
+
+            return o;
+          });
+
+         
+          setAdminOrders(newAdminOrders);
+         
         setUser({
             ...user,
             orders: [...newOrders]
         });
 
         const newBooks = books.map((b)=>{
-            const findBook = order.order.find((book)=>book.id === b.id);
+            const findBook = order.order.books.find((book)=>book.id === b.id);
 
             if(!findBook){
                 return  b;
@@ -153,9 +192,10 @@ export const OrderProvider = ({children} : {children : ReactNode}) => {
         });
 
         setBooks(newBooks);
+      }
 
 
-         }catch(err){
+         }catch(err : any){
             console.error("Error in canceling order : ", err);
          }finally{
             setLoadingOrder(false);
@@ -164,6 +204,7 @@ export const OrderProvider = ({children} : {children : ReactNode}) => {
 
         
     }
+   
 
     return(
         <OrderContext.Provider value={{addOrder, loadingOrder, cancelOrder}}>

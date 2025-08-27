@@ -15,7 +15,7 @@ const Store = () => {
     return(
 
         <>
-          <Header/>
+        
 
           <section className="flex flex-col justify-center items-center mt-7">
 

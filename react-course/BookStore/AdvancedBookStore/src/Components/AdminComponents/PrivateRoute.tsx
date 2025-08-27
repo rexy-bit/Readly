@@ -5,7 +5,7 @@ export default function PrivateRoute({children, role} : {children : React.ReactN
     const { user, initializing } = useUser();
     
    
-  
+ 
     if (initializing) {
      
         return (
@@ -15,13 +15,14 @@ export default function PrivateRoute({children, role} : {children : React.ReactN
         );
     }
     
-
+     if (!user) return <Navigate to="/" replace />;
    
-    if(user?.role === role){
+    if(user.role === role){
         
         return <Navigate to="/admin/dashboard" replace/>
     }
 
+   
    
 
    
