@@ -19,7 +19,7 @@ const AdminProfile = () => {
     return(
 
        <section className="flex flex-col justify-center items-center">
-         <h1 className="text-[1.5em] font-black text-blue-500">Admin Profile</h1>
+         <h1 className="text-[1.9em] underline font-black text-blue-500 mt-10">Admin Profile</h1>
               
                      <div className="flex flex-col justify-center items-center gap-3 mt-10 border-2 border-blue-500 p-2 rounded-xl mb-4 max-[500px]:w-[300px]">
                 <div>

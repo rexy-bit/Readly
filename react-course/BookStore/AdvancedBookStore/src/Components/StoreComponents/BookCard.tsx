@@ -30,11 +30,11 @@ const BookCard = ({book} : {book : Book}) => {
         }
 
     return(
-        <div className="flex flex-col w-[230px] justify-center items-center shadow-2xl shadow-blue-400 rounded-lg transition-transform duration-300 hover:scale-105"
+        <div className="flex flex-col w-[200px] justify-center items-center shadow-2xl shadow-blue-400 rounded-lg transition-transform duration-300 hover:scale-105"
         
         >
             <Link onClick={()=> setDescriptionBook(book)} to="/description">
-                <img src={book.image} alt={book.title} className="w-[170px] h-[250px] object-contain mt-3 transition-opacity duration-200 hover:opacity-80 active:opacity-60"/>
+                <img src={book.image} alt={book.title} className="w-[150px] h-[230px] object-contain mt-3 transition-opacity duration-200 hover:opacity-80 active:opacity-60"/>
 
                 
                 
@@ -44,7 +44,7 @@ const BookCard = ({book} : {book : Book}) => {
                 <Link onClick={()=> setDescriptionBook(book)} to="/description"><p className="text-blue-950 font-black transition-opacity duration-200 hover:opacity-80 active:opacity-60 text-center">{book.title}</p></Link>
                 <p className="text-[1.1em] font-bold">Da {book.price}</p>
 
-                <div className="h-[30px] w-full">
+                <div className="h-[15px] w-full">
                     {msg.show && 
                        <p style={{color : msg.color}} className="text-[1em] font-bold">{msg.text}</p>
                      }
@@ -52,7 +52,7 @@ const BookCard = ({book} : {book : Book}) => {
                      {book.stock === 0 && <p className="text-red-600 font-bold">Out of stock</p>}
 
                 </div>
-                <button className="mt-3 bg-blue-500 text-white w-full mb-3 h-[40px] rounded-lg font-bold cursor-pointer transition-opacity duration-200 hover:opacity-80 active:opacity-60" onClick={()=> handleAddToCart(book)}>Add to Cart</button>
+                <button className="mt-3 bg-blue-500 text-white w-full mb-3 h-[35px] rounded-lg font-bold cursor-pointer transition-opacity duration-200 hover:opacity-80 active:opacity-60" onClick={()=> handleAddToCart(book)}>Add to Cart</button>
             </div>
         </div>
     )

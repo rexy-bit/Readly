@@ -34,3 +34,17 @@
     transform: scale(1);
   }
 }
+
+html{
+  scroll-behavior: smooth;
+}
+
+.slick-track {
+  position: relative;
+  top: 0;
+  left: 0;
+  display: flex; /* toutes les slides alignées horizontalement */
+  justify-content: center;
+  justify-items: center;
+  gap : 1em;
+}
