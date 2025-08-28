@@ -25,7 +25,7 @@ const Filter = () => {
           ) : (
             <section className="flex flex-col justify-center items-center mt-10">
             <h1 className="text-[1.6em] text-blue-500 font-black underline">{categorie} Books</h1>
-            <div className="flex flex-wrap px-10 gap-10 justify-center items-center mt-10">
+            <div className="flex flex-wrap px-10 gap-10 justify-center items-center mt-10 mb-15">
               {filteredBooks.map((b)=>{
                 return(
                     <BookCard book={b} key={b.id}/>

@@ -12,7 +12,7 @@ const Books = () => {
          ?
            <div><i className="fa-solid fa-book fa-spin-pulse mt-10 text-[3em] text-blue-500"></i></div>
            : 
-            <div className="flex flex-wrap px-10 gap-10 justify-center items-center mt-10">
+            <div className="flex flex-wrap px-10 gap-10 justify-center items-center mt-10 mb-15">
          {books.map((book)=>{
 
             return(

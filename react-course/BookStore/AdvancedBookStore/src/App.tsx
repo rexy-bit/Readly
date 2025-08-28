@@ -38,6 +38,7 @@ import UserRoute from './Components/AdminComponents/UserRoute'
 import AdminRoute from './Components/AdminComponents/AdminRoute'
 import Users from './Pages/AdminPages/Users'
 import { UserSearchProvider } from './Contexts/SearchUsersContext'
+import Dashboard from './Pages/AdminPages/Dashboard'
 
 
 
@@ -130,7 +131,7 @@ function App() {
              </AdminRoute>
         }>
   
-          <Route path="dashboard" element={<div>Dashboard</div>} />
+          <Route path="dashboard" element={<Dashboard/>} />
           <Route path="books" element={<BookPage />} />
           <Route path="modify/:id" element={<Modify />} />
           <Route path="add" element={<AddBook />} />
